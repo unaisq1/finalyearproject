@@ -1,10 +1,11 @@
-description = "A simple extension example."
+version = "0.0.1"
+description = "Add-On for my Final Year Project"
 
 zapAddOn {
-    addOnName.set("Simple Example")
+    addOnName.set("Tips and Advice")
 
     manifest {
-        author.set("ZAP Dev Team")
+        author.set("Unais Qureshi")
     }
 }
 

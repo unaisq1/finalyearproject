@@ -108,6 +108,7 @@ var addOns =
         "sse",
         "svndigger",
         "tips",
+        "tipsandadvice",
         "todo",
         "tokengen",
         "treetools",
