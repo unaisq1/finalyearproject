@@ -112,7 +112,8 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
             statusPanel = new AbstractPanel();
             statusPanel.setLayout(new CardLayout());
             statusPanel.setName(Constant.messages.getString(PREFIX + ".panel.title"));
-            statusPanel.setIcon(new ImageIcon(getClass().getResource(RESOURCES + "/cake.png")));
+            //statusPanel.setIcon(new ImageIcon(getClass().getResource(RESOURCES + "/cake.png")));
+            statusPanel.setIcon(new ImageIcon(getClass().getResource(RESOURCES + "/tipsandadvice.png")));
             JTextPane pane = new JTextPane();
             pane.setEditable(false);
             // Obtain (and set) a font with the size defined in the options
