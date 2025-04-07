@@ -37,9 +37,9 @@ public class RightClickMsgMenu extends PopupMenuItemHttpMessageContainer {
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
-    private ExtensionSimpleExample extension;
+    private ExtensionTipsAndAdvice extension;
 
-    public RightClickMsgMenu(ExtensionSimpleExample ext, String label) {
+    public RightClickMsgMenu(ExtensionTipsAndAdvice ext, String label) {
         super(label);
         /*
          * This is how you can pass in your extension, which you may well need to use
@@ -55,7 +55,7 @@ public class RightClickMsgMenu extends PopupMenuItemHttpMessageContainer {
         View.getSingleton()
                 .showMessageDialog(
                         Constant.messages.getString(
-                                ExtensionSimpleExample.PREFIX + ".popup.msg",
+                                ExtensionTipsAndAdvice.PREFIX + ".popup.msg",
                                 msg.getRequestHeader().getURI().toString()));
     }
 

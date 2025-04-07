@@ -43,7 +43,7 @@ import org.zaproxy.zap.view.ZapMenuItem;
  *
  * @see #hook(ExtensionHook)
  */
-public class ExtensionSimpleExample extends ExtensionAdaptor {
+public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     // The name is public so that other extensions can access it
     public static final String NAME = "ExtensionTipsAndAdvice";
@@ -69,9 +69,9 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
 
     private SimpleExampleAPI api;
 
-    private static final Logger LOGGER = LogManager.getLogger(ExtensionSimpleExample.class);
+    private static final Logger LOGGER = LogManager.getLogger(ExtensionTipsAndAdvice.class);
 
-    public ExtensionSimpleExample() {
+    public ExtensionTipsAndAdvice() {
         super(NAME);
         setI18nPrefix(PREFIX);
     }
@@ -159,7 +159,7 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
                 View.getSingleton()
                         .showWarningDialog(
                                 Constant.messages.getString(
-                                        ExtensionSimpleExample.PREFIX + ".error.nofile",
+                                        ExtensionTipsAndAdvice.PREFIX + ".error.nofile",
                                         f.getAbsolutePath()));
                 return;
             }
