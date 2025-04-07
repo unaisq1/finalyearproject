@@ -52,6 +52,8 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
     // to copy and change this example
     protected static final String PREFIX = "tipsandadvice";
 
+    //private static final int tipNumber = (int)(Math.random() * 4);
+
     /**
      * Relative path (from add-on package) to load add-on resources.
      *
@@ -109,6 +111,7 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
 
     private AbstractPanel getStatusPanel() {
         if (statusPanel == null) {
+            int tipNumber = (int)(Math.random() * 4);
             statusPanel = new AbstractPanel();
             statusPanel.setLayout(new CardLayout());
             statusPanel.setName(Constant.messages.getString(PREFIX + ".panel.title"));
@@ -119,7 +122,8 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
             // Obtain (and set) a font with the size defined in the options
             pane.setFont(FontUtils.getFont("Dialog", Font.PLAIN));
             pane.setContentType("text/html");
-            pane.setText(Constant.messages.getString(PREFIX + ".panel.msg"));
+            pane.setText(Constant.messages.getString(PREFIX + ".panel.msg." + tipNumber));
+            //pane.setText("yo");
             statusPanel.add(pane);
         }
         return statusPanel;
