@@ -28,14 +28,14 @@ import org.zaproxy.zap.extension.api.ApiImplementor;
 import org.zaproxy.zap.extension.api.ApiResponse;
 import org.zaproxy.zap.extension.api.ApiResponseElement;
 
-public class SimpleExampleAPI extends ApiImplementor {
+public class TipsAndAdviceAPI extends ApiImplementor {
     private static final String PREFIX = "simpleExample";
 
     private static final String ACTION_HELLO_WORLD = "helloWorld";
 
-    private static final Logger LOGGER = LogManager.getLogger(SimpleExampleAPI.class);
+    private static final Logger LOGGER = LogManager.getLogger(TipsAndAdviceAPI.class);
 
-    public SimpleExampleAPI() {
+    public TipsAndAdviceAPI() {
         this.addApiAction(new ApiAction(ACTION_HELLO_WORLD));
     }
 

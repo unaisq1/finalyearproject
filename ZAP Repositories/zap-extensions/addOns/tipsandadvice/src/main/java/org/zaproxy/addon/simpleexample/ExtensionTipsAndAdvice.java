@@ -67,7 +67,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     private RightClickMsgMenu popupMsgMenuExample;
     private AbstractPanel statusPanel;
 
-    private SimpleExampleAPI api;
+    private TipsAndAdviceAPI api;
 
     private static final Logger LOGGER = LogManager.getLogger(ExtensionTipsAndAdvice.class);
 
@@ -80,7 +80,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     public void hook(ExtensionHook extensionHook) {
         super.hook(extensionHook);
 
-        this.api = new SimpleExampleAPI();
+        this.api = new TipsAndAdviceAPI();
         extensionHook.addApiImplementor(this.api);
 
         // As long as we're not running as a daemon
