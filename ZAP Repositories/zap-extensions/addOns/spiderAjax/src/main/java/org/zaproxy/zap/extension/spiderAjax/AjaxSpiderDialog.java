@@ -451,7 +451,9 @@ public class AjaxSpiderDialog extends StandardFieldsDialog {
             try {
                 // Need both constructors as they catch slightly different issues ;)
                 startUri = new URI(url);
-                new URL(url);
+                //new URL(url);
+                URL finalUrl = URI.create(url).toURL();
+
             } catch (Exception e) {
                 return Constant.messages.getString("spiderajax.scandialog.nostart.error");
             }
