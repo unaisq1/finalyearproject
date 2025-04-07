@@ -115,14 +115,13 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
             statusPanel = new AbstractPanel();
             statusPanel.setLayout(new CardLayout());
             statusPanel.setName(Constant.messages.getString(PREFIX + ".panel.title"));
-            //statusPanel.setIcon(new ImageIcon(getClass().getResource(RESOURCES + "/cake.png")));
             statusPanel.setIcon(new ImageIcon(getClass().getResource(RESOURCES + "/tipsandadvice.png")));
             JTextPane pane = new JTextPane();
             pane.setEditable(false);
             // Obtain (and set) a font with the size defined in the options
             pane.setFont(FontUtils.getFont("Dialog", Font.PLAIN));
             pane.setContentType("text/html");
-            pane.setText(Constant.messages.getString(PREFIX + ".panel.msg." + tipNumber));
+            pane.setText(Constant.messages.getString(PREFIX + ".panel.msg"));
             //pane.setText("yo");
             statusPanel.add(pane);
         }
@@ -131,15 +130,18 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
 
     private ZapMenuItem getMenuExample() {
         if (menuExample == null) {
+            //int tipNumber = (int)(Math.random() * 4);
             menuExample = new ZapMenuItem(PREFIX + ".topmenu.tools.title");
 
             menuExample.addActionListener(
                     e -> {
                         // This is where you do what you want to do.
                         // In this case we'll just show a popup message.
+                        int tipNumber = (int)(Math.random() * 4);
                         View.getSingleton()
                                 .showMessageDialog(
-                                        Constant.messages.getString(PREFIX + ".topmenu.tools.msg"));
+                                        //Constant.messages.getString(PREFIX + ".topmenu.tools.msg"));
+                                        Constant.messages.getString(PREFIX + ".tip." + tipNumber));
                         // And display a file included with the add-on in the Output tab
                         displayFile(EXAMPLE_FILE);
                     });
