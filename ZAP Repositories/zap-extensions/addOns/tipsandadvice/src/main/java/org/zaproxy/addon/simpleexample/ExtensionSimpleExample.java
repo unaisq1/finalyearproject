@@ -122,7 +122,6 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
             pane.setFont(FontUtils.getFont("Dialog", Font.PLAIN));
             pane.setContentType("text/html");
             pane.setText(Constant.messages.getString(PREFIX + ".panel.msg"));
-            //pane.setText("yo");
             statusPanel.add(pane);
         }
         return statusPanel;
@@ -130,7 +129,6 @@ public class ExtensionSimpleExample extends ExtensionAdaptor {
 
     private ZapMenuItem getMenuExample() {
         if (menuExample == null) {
-            //int tipNumber = (int)(Math.random() * 4);
             menuExample = new ZapMenuItem(PREFIX + ".topmenu.tools.title");
 
             menuExample.addActionListener(
