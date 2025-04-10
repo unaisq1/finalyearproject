@@ -63,7 +63,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     private static final String EXAMPLE_FILE = "example/ExampleFile.txt";
 
-    private ZapMenuItem menuExample;
+    private ZapMenuItem menuTipsAndAdvice;
     private RightClickMsgMenu popupMsgMenuExample;
     private AbstractPanel statusPanel;
 
@@ -85,7 +85,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
         // As long as we're not running as a daemon
         if (hasView()) {
-            extensionHook.getHookMenu().addToolsMenuItem(getMenuExample());
+            extensionHook.getHookMenu().addHelpMenuItem(getMenuTipsAndAdvice());
             extensionHook.getHookMenu().addPopupMenuItem(getPopupMsgMenuExample());
             extensionHook.getHookView().addStatusPanel(getStatusPanel());
         }
@@ -127,11 +127,11 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return statusPanel;
     }
 
-    private ZapMenuItem getMenuExample() {
-        if (menuExample == null) {
-            menuExample = new ZapMenuItem(PREFIX + ".topmenu.tools.title");
+    private ZapMenuItem getMenuTipsAndAdvice() {
+        if (menuTipsAndAdvice == null) {
+            menuTipsAndAdvice = new ZapMenuItem(PREFIX + ".topmenu.help.title");
 
-            menuExample.addActionListener(
+            menuTipsAndAdvice.addActionListener(
                     e -> {
                         // This is where you do what you want to do.
                         // In this case we'll just show a popup message.
@@ -141,10 +141,10 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                                         //Constant.messages.getString(PREFIX + ".topmenu.tools.msg"));
                                         Constant.messages.getString(PREFIX + ".tip." + tipNumber));
                         // And display a file included with the add-on in the Output tab
-                        displayFile(EXAMPLE_FILE);
+                        //displayFile(EXAMPLE_FILE);
                     });
         }
-        return menuExample;
+        return menuTipsAndAdvice;
     }
 
     private void displayFile(String file) {
