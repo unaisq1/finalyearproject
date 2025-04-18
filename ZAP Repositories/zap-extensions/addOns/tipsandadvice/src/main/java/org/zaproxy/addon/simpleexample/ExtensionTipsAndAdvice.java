@@ -89,6 +89,10 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             extensionHook.getHookMenu().addPopupMenuItem(getPopupMsgMenuExample());
             extensionHook.getHookView().addStatusPanel(getStatusPanel());
         }
+
+        View.getSingleton()
+                .showMessageDialog(
+                        Constant.messages.getString(PREFIX + ".popup.title"));
     }
 
     @Override
