@@ -76,6 +76,14 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         setI18nPrefix(PREFIX);
     }
 
+    private void displayRandomTip()
+    {
+        int tipNumber = (int)(Math.random() * 4);
+        View.getSingleton()
+                .showMessageDialog(
+                        Constant.messages.getString(PREFIX + ".tip." + tipNumber));
+    }
+
     @Override
     public void hook(ExtensionHook extensionHook) {
         super.hook(extensionHook);
@@ -90,9 +98,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             extensionHook.getHookView().addStatusPanel(getStatusPanel());
         }
 
-        View.getSingleton()
-                .showMessageDialog(
-                        Constant.messages.getString(PREFIX + ".popup.title"));
+        displayRandomTip();
     }
 
     @Override
@@ -105,7 +111,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     @Override
     public void unload() {
         super.unload();
-
         // In this example it's not necessary to override the method, as there's nothing to unload
         // manually, the components added through the class ExtensionHook (in hook(ExtensionHook))
         // are automatically removed by the base unload() method.
@@ -115,7 +120,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     private AbstractPanel getStatusPanel() {
         if (statusPanel == null) {
-            int tipNumber = (int)(Math.random() * 4);
             statusPanel = new AbstractPanel();
             statusPanel.setLayout(new CardLayout());
             statusPanel.setName(Constant.messages.getString(PREFIX + ".panel.title"));
