@@ -23,6 +23,11 @@ import java.awt.CardLayout;
 import java.awt.Font;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Enumeration;
+
 import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
 import org.apache.logging.log4j.LogManager;
@@ -52,16 +57,13 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     // to copy and change this example
     protected static final String PREFIX = "tipsandadvice";
 
-    //private static final int tipNumber = (int)(Math.random() * 4);
-
     /**
      * Relative path (from add-on package) to load add-on resources.
      *
      * @see Class#getResource(String)
      */
     private static final String RESOURCES = "resources";
-
-    private static final String EXAMPLE_FILE = "example/ExampleFile.txt";
+    private List<String> tips = null;
 
     private ZapMenuItem menuTipsAndAdvice;
     private RightClickMsgMenu popupMsgMenuExample;
@@ -76,12 +78,39 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         setI18nPrefix(PREFIX);
     }
 
+    private List<String> getTips()
+    {
+        if (this.tips == null ) {
+            this.tips = new ArrayList<String>();
+            ResourceBundle rb = Constant.messages.getMessageBundle("tipsandadvice");
+            Enumeration<String> enm = rb.getKeys();
+   
+            while(enm.hasMoreElements()) {
+               String key = enm.nextElement();
+               if (key.startsWith("tipsandadvice.tip.")) {
+                  this.tips.add(rb.getString(key));
+               }
+            }
+         }
+   
+         return this.tips;
+    }
+
     private void displayRandomTip()
     {
-        int tipNumber = (int)(Math.random() * 4);
+        //int tipNumber = (int)(Math.random() * 4);
+        int tipNumber = this.tips.size() - 1;
+
         View.getSingleton()
                 .showMessageDialog(
-                        Constant.messages.getString(PREFIX + ".tip." + tipNumber));
+                        Constant.messages.getString(PREFIX + ".tip." + (tipNumber+1)));
+    }
+
+    private void displaySpecificTip()
+    {
+        View.getSingleton()
+                .showMessageDialog(
+                        Constant.messages.getString(this.tips.get(1)));
     }
 
     @Override
@@ -90,6 +119,17 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
         this.api = new TipsAndAdviceAPI();
         extensionHook.addApiImplementor(this.api);
+
+        getTips();
+
+        // ArrayList<String> tips = new ArrayList<String>();
+        // ResourceBundle bundle = Constant.messages.getMessageBundle(PREFIX + ".tip.");
+        // Enumeration keys = bundle.getKeys();
+
+        // for (key : bundle)
+        // {
+
+        // }
 
         // As long as we're not running as a daemon
         if (hasView()) {
@@ -143,13 +183,11 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                     e -> {
                         // This is where you do what you want to do.
                         // In this case we'll just show a popup message.
-                        int tipNumber = (int)(Math.random() * 4);
-                        View.getSingleton()
-                                .showMessageDialog(
-                                        //Constant.messages.getString(PREFIX + ".topmenu.tools.msg"));
-                                        Constant.messages.getString(PREFIX + ".tip." + tipNumber));
-                        // And display a file included with the add-on in the Output tab
-                        //displayFile(EXAMPLE_FILE);
+                        // int tipNumber = (int)((Math.random() * 20) + 1);
+                        // View.getSingleton()
+                        //         .showMessageDialog(
+                        //                 Constant.messages.getString(PREFIX + ".tip." + tipNumber));
+                        displaySpecificTip();
                     });
         }
         return menuTipsAndAdvice;
