@@ -21,6 +21,7 @@ package org.zaproxy.addon.simpleexample;
 import org.parosproxy.paros.control.Control;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.nio.file.Files;
@@ -171,9 +172,11 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             JTextPane pane = new JTextPane();
             pane.setEditable(false);
             // Obtain (and set) a font with the size defined in the options
-            pane.setFont(FontUtils.getFont("Dialog", Font.PLAIN));
+            pane.setFont(FontUtils.getFont("Inter", Font.PLAIN));
             pane.setContentType("text/html");
             pane.setText(Constant.messages.getString(PREFIX + ".panel.msg"));
+            pane.setBackground(new java.awt.Color(255, 254, 192));
+            // pane.setBorder();
             statusPanel.add(pane);
         }
         return statusPanel;
