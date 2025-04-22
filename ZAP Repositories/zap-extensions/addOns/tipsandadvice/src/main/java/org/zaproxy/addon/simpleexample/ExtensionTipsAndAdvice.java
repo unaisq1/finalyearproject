@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 package org.zaproxy.addon.simpleexample;
+import org.parosproxy.paros.control.Control;
 
 import java.awt.CardLayout;
 import java.awt.Font;
@@ -33,9 +34,12 @@ import javax.swing.JTextPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.parosproxy.paros.Constant;
+import org.parosproxy.paros.control.MenuFileControl;
+import org.parosproxy.paros.control.AbstractControl;
 import org.parosproxy.paros.extension.AbstractPanel;
 import org.parosproxy.paros.extension.ExtensionAdaptor;
 import org.parosproxy.paros.extension.ExtensionHook;
+import org.parosproxy.paros.extension.ExtensionLoader;
 import org.parosproxy.paros.view.View;
 import org.zaproxy.zap.utils.FontUtils;
 import org.zaproxy.zap.view.ZapMenuItem;
@@ -98,19 +102,18 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     private void displayRandomTip()
     {
-        //int tipNumber = (int)(Math.random() * 4);
-        int tipNumber = this.tips.size() - 1;
+        int tipNumber = (int)(Math.random() * (this.tips.size() - 1));
 
         View.getSingleton()
                 .showMessageDialog(
-                        Constant.messages.getString(PREFIX + ".tip." + (tipNumber+1)));
+                        Constant.messages.getString(PREFIX + ".tip." + tipNumber));
     }
 
-    private void displaySpecificTip()
+    private void displaySpecificTip(int number)
     {
         View.getSingleton()
                 .showMessageDialog(
-                        Constant.messages.getString(this.tips.get(1)));
+                        Constant.messages.getString(PREFIX + ".tip." + number));
     }
 
     @Override
@@ -139,6 +142,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         }
 
         displayRandomTip();
+        
     }
 
     @Override
@@ -187,7 +191,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                         // View.getSingleton()
                         //         .showMessageDialog(
                         //                 Constant.messages.getString(PREFIX + ".tip." + tipNumber));
-                        displaySpecificTip();
+                        displayRandomTip();
                     });
         }
         return menuTipsAndAdvice;
