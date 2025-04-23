@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.zaproxy.addon.simpleexample;
+package org.zaproxy.addon.tipsandadvice;
 import org.parosproxy.paros.control.Control;
 
 import java.awt.CardLayout;
@@ -42,6 +42,7 @@ import org.parosproxy.paros.extension.ExtensionAdaptor;
 import org.parosproxy.paros.extension.ExtensionHook;
 import org.parosproxy.paros.extension.ExtensionLoader;
 import org.parosproxy.paros.view.View;
+import org.zaproxy.addon.tipsandadvice.TipsCollection;
 import org.zaproxy.zap.utils.FontUtils;
 import org.zaproxy.zap.view.ZapMenuItem;
 
