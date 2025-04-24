@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 package org.zaproxy.addon.tipsandadvice;
+
 import org.parosproxy.paros.control.Control;
 
 import java.awt.CardLayout;
@@ -30,8 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Enumeration;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
+import javax.swing.JFrame;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.parosproxy.paros.Constant;
@@ -42,9 +45,10 @@ import org.parosproxy.paros.extension.ExtensionAdaptor;
 import org.parosproxy.paros.extension.ExtensionHook;
 import org.parosproxy.paros.extension.ExtensionLoader;
 import org.parosproxy.paros.view.View;
-import org.zaproxy.addon.tipsandadvice.TipsCollection;
 import org.zaproxy.zap.utils.FontUtils;
 import org.zaproxy.zap.view.ZapMenuItem;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.Style;
 
 /**
  * An example ZAP extension which adds a top level menu item, a pop up menu item and a status panel.
@@ -102,20 +106,30 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
          return this.tips;
     }
 
-    private void displayRandomTip()
+    private String getRandomTip()
     {
         int tipNumber = (int)(Math.random() * (this.tips.size() - 1));
 
+        return (PREFIX + ".tip." + tipNumber);
+    }
+
+    private void displayRandomTip()
+    {
         View.getSingleton()
                 .showMessageDialog(
-                        Constant.messages.getString(PREFIX + ".tip." + tipNumber));
+                        Constant.messages.getString(getRandomTip()));
+    }
+
+    private String getSpecificTip(int number)
+    {
+        return (PREFIX + ".tip." + number);
     }
 
     private void displaySpecificTip(int number)
     {
         View.getSingleton()
                 .showMessageDialog(
-                        Constant.messages.getString(PREFIX + ".tip." + number));
+                        Constant.messages.getString(getSpecificTip(number)));
     }
 
     @Override
@@ -175,9 +189,17 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             // Obtain (and set) a font with the size defined in the options
             pane.setFont(FontUtils.getFont("Inter", Font.PLAIN));
             pane.setContentType("text/html");
-            pane.setText(Constant.messages.getString(PREFIX + ".panel.msg"));
+            // pane.setText("Tip of the Day: " + "<br>" + Constant.messages.getString(getRandomTip()));
+            // StyledDocument doc = pane.getStyledDocument();
+            // Style style = pane.addStyle("", null);
+            // int docLength = doc.getLength();
+            // doc.insertString(docLength, "Hey", style);
+            pane.setText("<html>" + 
+            "<b>Tip of the Day:</b><br>" + 
+            Constant.messages.getString(getRandomTip()) + 
+            "</html>");
             pane.setBackground(new java.awt.Color(255, 254, 192));
-            // pane.setBorder();
+            statusPanel.setBorder(BorderFactory.createLineBorder(Color.black,3));
             statusPanel.add(pane);
         }
         return statusPanel;
