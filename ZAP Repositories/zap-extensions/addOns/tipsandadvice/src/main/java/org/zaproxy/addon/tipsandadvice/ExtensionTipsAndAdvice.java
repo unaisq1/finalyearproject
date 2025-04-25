@@ -32,9 +32,11 @@ import java.util.List;
 import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
 import javax.swing.JFrame;
+import javax.swing.JButton;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.parosproxy.paros.Constant;
@@ -47,8 +49,6 @@ import org.parosproxy.paros.extension.ExtensionLoader;
 import org.parosproxy.paros.view.View;
 import org.zaproxy.zap.utils.FontUtils;
 import org.zaproxy.zap.view.ZapMenuItem;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.Style;
 
 /**
  * An example ZAP extension which adds a top level menu item, a pop up menu item and a status panel.
@@ -189,15 +189,26 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             // Obtain (and set) a font with the size defined in the options
             pane.setFont(FontUtils.getFont("Inter", Font.PLAIN));
             pane.setContentType("text/html");
+
             // pane.setText("Tip of the Day: " + "<br>" + Constant.messages.getString(getRandomTip()));
             // StyledDocument doc = pane.getStyledDocument();
             // Style style = pane.addStyle("", null);
             // int docLength = doc.getLength();
             // doc.insertString(docLength, "Hey", style);
+
             pane.setText("<html>" + 
-            "<b>Tip of the Day:</b><br>" + 
-            Constant.messages.getString(getRandomTip()) + 
+                "<b>Tip of the Day:</b><br><br>" + 
+                Constant.messages.getString(getRandomTip()) + 
+                "<br><br>Would you like to know more about ... ?" + 
             "</html>");
+            
+            Icon icon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
+            JButton next = new JButton(icon);
+            next.setBounds(0, 100, 50, 50);
+            //next.setSize(50,50);
+
+            pane.add(next);
+
             pane.setBackground(new java.awt.Color(255, 254, 192));
             statusPanel.setBorder(BorderFactory.createLineBorder(Color.black,3));
             statusPanel.add(pane);
