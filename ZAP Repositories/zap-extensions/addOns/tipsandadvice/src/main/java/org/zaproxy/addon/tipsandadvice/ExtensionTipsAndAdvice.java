@@ -24,6 +24,8 @@ import org.parosproxy.paros.control.Control;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
@@ -178,6 +180,15 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         // here (if the extension declares that can be unloaded, see above method).
     }
 
+    private void setPaneText(JTextPane pane)
+    {
+        pane.setText("<html>" + 
+            "<b>Tip of the Day:</b><br><br>" + 
+            Constant.messages.getString(getRandomTip()) + 
+            "<br><br>Would you like to know more about ... ?" + 
+        "</html>");
+    }
+
     private AbstractPanel getStatusPanel() {
         if (statusPanel == null) {
             statusPanel = new AbstractPanel();
@@ -196,19 +207,24 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             // int docLength = doc.getLength();
             // doc.insertString(docLength, "Hey", style);
 
-            pane.setText("<html>" + 
-                "<b>Tip of the Day:</b><br><br>" + 
-                Constant.messages.getString(getRandomTip()) + 
-                "<br><br>Would you like to know more about ... ?" + 
-            "</html>");
+            // pane.setText("<html>" + 
+            //     "<b>Tip of the Day:</b><br><br>" + 
+            //     Constant.messages.getString(getRandomTip()) + 
+            //     "<br><br>Would you like to know more about ... ?" + 
+            // "</html>");
+
+            setPaneText(pane);
             
             Icon icon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
             JButton next = new JButton(icon);
             next.setBounds(0, 100, 50, 50);
-            //next.setSize(50,50);
-
             pane.add(next);
-
+            next.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    setPaneText(pane);
+                }
+            });
             pane.setBackground(new java.awt.Color(255, 254, 192));
             statusPanel.setBorder(BorderFactory.createLineBorder(Color.black,3));
             statusPanel.add(pane);
