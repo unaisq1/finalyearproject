@@ -92,6 +92,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     private List<String> getTips()
     {
+        //Code inspired by TipsAndTrick's ExtensionTipsAndTricks.java file (lines 57-76)
         if (this.tips == null ) {
             this.tips = new ArrayList<String>();
             ResourceBundle rb = Constant.messages.getMessageBundle("tipsandadvice");
@@ -214,10 +215,20 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             // "</html>");
 
             setPaneText(pane);
-            
-            Icon icon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
-            JButton next = new JButton(icon);
-            next.setBounds(0, 100, 50, 50);
+
+            Icon prevIcon = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButton.png"));
+            Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
+            JButton prev = new JButton(prevIcon);
+            JButton next = new JButton(nextIcon);
+            prev.setBounds(0, 100, 50, 50);
+            pane.add(prev);
+            prev.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    setPaneText(pane);
+                }
+            });
+            next.setBounds(50, 100, 50, 50);
             pane.add(next);
             next.addActionListener(new ActionListener() {
                 @Override
@@ -238,12 +249,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
             menuTipsAndAdvice.addActionListener(
                     e -> {
-                        // This is where you do what you want to do.
-                        // In this case we'll just show a popup message.
-                        // int tipNumber = (int)((Math.random() * 20) + 1);
-                        // View.getSingleton()
-                        //         .showMessageDialog(
-                        //                 Constant.messages.getString(PREFIX + ".tip." + tipNumber));
                         displayRandomTip();
                     });
         }
