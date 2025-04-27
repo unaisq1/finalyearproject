@@ -1,14 +1,15 @@
 package org.zaproxy.zap.extension.tips;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Point;
+import java.awt.Dialog.ModalityType;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.extension.AbstractDialog;
 import org.parosproxy.paros.model.Model;
@@ -18,118 +19,130 @@ import org.zaproxy.zap.view.LayoutHelper;
 
 @SuppressWarnings("serial")
 public class TipsAndTricksDialog extends AbstractDialog {
+   private static final long serialVersionUID = -1L;
+   private ExtensionTipsAndTricks ext;
+   private JPanel jPanel = null;
+   private JButton btnAllTips = null;
+   private JButton btnNextTip = null;
+   private JButton btnClose = null;
+   private ZapTextArea txtTip = null;
+   private JScrollPane scrollPane = null;
+   private JPanel jPanel1 = null;
+   private String lastTip = null;
 
-    private static final long serialVersionUID = -1L;
+   public TipsAndTricksDialog(ExtensionTipsAndTricks ext, Frame parent) throws HeadlessException {
+      super(parent, true);
+      this.ext = ext;
+      this.initialize();
+   }
 
-    private ExtensionTipsAndTricks ext;
-    private JPanel jPanel = null;
-    private JButton btnAllTips = null;
-    private JButton btnNextTip = null;
-    private JButton btnClose = null;
-    private ZapTextArea txtTip = null;
-    private JScrollPane scrollPane = null;
-    private JPanel jPanel1 = null;
-    private String lastTip = null;
+   private void initialize() {
+      this.setVisible(false);
+      this.setResizable(false);
+      this.setModalityType(ModalityType.DOCUMENT_MODAL);
+      this.setTitle(Constant.messages.getString("tips.dialog.title"));
+      this.setContentPane(this.getJPanel());
+      if (Model.getSingleton().getOptionsParam().getViewParam().getWmUiHandlingOption() == 0) {
+         this.setSize(300, 235);
+      }
 
-    public TipsAndTricksDialog(ExtensionTipsAndTricks ext, Frame parent) throws HeadlessException {
-        super(parent, true);
-        this.ext = ext;
-        initialize();
-    }
+      this.centreDialog();
+      this.getRootPane().setDefaultButton(this.btnNextTip);
+      this.pack();
+   }
 
-    private void initialize() {
-        this.setVisible(false);
-        this.setResizable(false);
-        this.setModalityType(ModalityType.DOCUMENT_MODAL);
-        this.setTitle(Constant.messages.getString("tips.dialog.title"));
-        this.setContentPane(getJPanel());
-        if (Model.getSingleton().getOptionsParam().getViewParam().getWmUiHandlingOption() == 0) {
-            this.setSize(300, 235);
-        }
-        centreDialog();
-        this.getRootPane().setDefaultButton(btnNextTip);
-        pack();
-    }
+   public void displayTip() {
+      String tip;
+      for(tip = this.ext.getRandomTip(); tip.equals(this.lastTip); tip = this.ext.getRandomTip()) {
+      }
 
-    public void displayTip() {
-        String tip = ext.getRandomTip();
-        while (tip.equals(lastTip)) {
-            tip = ext.getRandomTip();
-        }
-        this.getTxtTip().setText(tip);
-        this.getScrollPane().getViewport().setViewPosition(new Point(0, 0));
-        lastTip = tip;
-        this.setVisible(true);
-    }
+      this.getTxtTip().setText(tip);
+      this.getScrollPane().getViewport().setViewPosition(new Point(0, 0));
+      this.lastTip = tip;
+      this.setVisible(true);
+   }
 
-    private JPanel getJPanel() {
-        if (jPanel == null) {
-            jPanel = new JPanel();
-            jPanel.setLayout(new GridBagLayout());
-            jPanel.add(getScrollPane(), LayoutHelper.getGBC(0, 0, 3, 1.0D, 1.0D));
-            jPanel.add(getAllTipsButton(), LayoutHelper.getGBC(0, 2, 1, 0.0D, 0.0D));
-            jPanel.add(new JLabel(), LayoutHelper.getGBC(1, 2, 1, 1.0D, 0.0D));
-            jPanel.add(getButtonPanel(), LayoutHelper.getGBC(2, 2, 1, 0.0D, 0.0D));
-        }
-        return jPanel;
-    }
+   private JPanel getJPanel() {
+      if (this.jPanel == null) {
+         this.jPanel = new JPanel();
+         this.jPanel.setLayout(new GridBagLayout());
+         this.jPanel.add(this.getScrollPane(), LayoutHelper.getGBC(0, 0, 3, 1.0D, 1.0D));
+         this.jPanel.add(this.getAllTipsButton(), LayoutHelper.getGBC(0, 2, 1, 0.0D, 0.0D));
+         this.jPanel.add(new JLabel(), LayoutHelper.getGBC(1, 2, 1, 1.0D, 0.0D));
+         this.jPanel.add(this.getButtonPanel(), LayoutHelper.getGBC(2, 2, 1, 0.0D, 0.0D));
+      }
 
-    private JButton getAllTipsButton() {
-        if (btnAllTips == null) {
-            btnAllTips = new JButton();
-            btnAllTips.setText(Constant.messages.getString("tips.button.allTips"));
-            btnAllTips.addActionListener(e -> ExtensionHelp.showHelp("tips"));
-        }
-        return btnAllTips;
-    }
+      return this.jPanel;
+   }
 
-    private JButton getNextTipButton() {
-        if (btnNextTip == null) {
-            btnNextTip = new JButton();
-            btnNextTip.setText(Constant.messages.getString("tips.button.nextTip"));
-            btnNextTip.addActionListener(e -> displayTip());
-        }
-        return btnNextTip;
-    }
+   private JButton getAllTipsButton() {
+      if (this.btnAllTips == null) {
+         this.btnAllTips = new JButton();
+         this.btnAllTips.setText(Constant.messages.getString("tips.button.allTips"));
+         this.btnAllTips.addActionListener((e) -> {
+            ExtensionHelp.showHelp("tips");
+         });
+      }
 
-    private JButton getCloseButton() {
-        if (btnClose == null) {
-            btnClose = new JButton();
-            btnClose.setText(Constant.messages.getString("all.button.close"));
-            btnClose.addActionListener(e -> TipsAndTricksDialog.this.setVisible(false));
-        }
-        return btnClose;
-    }
+      return this.btnAllTips;
+   }
 
-    private JScrollPane getScrollPane() {
-        if (scrollPane == null) {
-            scrollPane = new JScrollPane();
-            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setMinimumSize(new java.awt.Dimension(300, 200));
-            scrollPane.setPreferredSize(new java.awt.Dimension(300, 200));
-            scrollPane.setViewportView(this.getTxtTip());
-        }
-        return scrollPane;
-    }
+   private JButton getNextTipButton() {
+      if (this.btnNextTip == null) {
+         this.btnNextTip = new JButton();
+         this.btnNextTip.setText(Constant.messages.getString("tips.button.nextTip"));
+         this.btnNextTip.addActionListener((e) -> {
+            this.displayTip();
+         });
+      }
 
-    private ZapTextArea getTxtTip() {
-        if (txtTip == null) {
-            txtTip = new ZapTextArea();
-            txtTip.setEditable(false);
-            txtTip.setLineWrap(true);
-            txtTip.setWrapStyleWord(true);
-        }
-        return txtTip;
-    }
+      return this.btnNextTip;
+   }
 
-    private JPanel getButtonPanel() {
-        if (jPanel1 == null) {
-            jPanel1 = new JPanel();
-            jPanel1.setMinimumSize(new java.awt.Dimension(300, 35));
-            jPanel1.add(getCloseButton(), null);
-            jPanel1.add(getNextTipButton(), null);
-        }
-        return jPanel1;
-    }
+   private JButton getCloseButton() {
+      if (this.btnClose == null) {
+         this.btnClose = new JButton();
+         this.btnClose.setText(Constant.messages.getString("all.button.close"));
+         this.btnClose.addActionListener((e) -> {
+            this.setVisible(false);
+         });
+      }
+
+      return this.btnClose;
+   }
+
+   private JScrollPane getScrollPane() {
+      if (this.scrollPane == null) {
+         this.scrollPane = new JScrollPane();
+         this.scrollPane.setHorizontalScrollBarPolicy(31);
+         this.scrollPane.setVerticalScrollBarPolicy(20);
+         this.scrollPane.setMinimumSize(new Dimension(300, 200));
+         this.scrollPane.setPreferredSize(new Dimension(300, 200));
+         this.scrollPane.setViewportView(this.getTxtTip());
+      }
+
+      return this.scrollPane;
+   }
+
+   private ZapTextArea getTxtTip() {
+      if (this.txtTip == null) {
+         this.txtTip = new ZapTextArea();
+         this.txtTip.setEditable(false);
+         this.txtTip.setLineWrap(true);
+         this.txtTip.setWrapStyleWord(true);
+      }
+
+      return this.txtTip;
+   }
+
+   private JPanel getButtonPanel() {
+      if (this.jPanel1 == null) {
+         this.jPanel1 = new JPanel();
+         this.jPanel1.setMinimumSize(new Dimension(300, 35));
+         this.jPanel1.add(this.getCloseButton(), (Object)null);
+         this.jPanel1.add(this.getNextTipButton(), (Object)null);
+      }
+
+      return this.jPanel1;
+   }
 }

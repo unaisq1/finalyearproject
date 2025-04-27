@@ -1,22 +1,3 @@
-/*
- * Zed Attack Proxy (ZAP) and its related class files.
- *
- * ZAP is an HTTP/HTTPS proxy for assessing web application security.
- *
- * Copyright 2014 The ZAP Development Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.zaproxy.zap.extension.tips;
 
 import java.io.File;
@@ -25,6 +6,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -36,145 +18,144 @@ import org.parosproxy.paros.extension.ExtensionHook;
 import org.parosproxy.paros.view.View;
 import org.zaproxy.zap.view.ZapMenuItem;
 
-/*
- * An example ZAP extension which adds a top level menu item.
- *
- * This class is defines the extension.
- */
 public class ExtensionTipsAndTricks extends ExtensionAdaptor {
+   public static final String NAME = "ExtensionTipsAndTricks";
+   private static final String PREFIX = "tips";
+   private static final String TIPS_PREFIX = "tips.tip.";
+   private ZapMenuItem menuTipsAndTricks = null;
+   private TipsAndTricksDialog dialog = null;
+   private List<String> tipsAndTricks = null;
+   private Random random = new Random();
 
-    // The name is public so that other extensions can access it
-    public static final String NAME = "ExtensionTipsAndTricks";
+   public ExtensionTipsAndTricks() {
+      super("ExtensionTipsAndTricks");
+   }
 
-    private static final String PREFIX = "tips";
-    private static final String TIPS_PREFIX = PREFIX + ".tip.";
+   @Override
+   public void hook(ExtensionHook extensionHook) {
+      super.hook(extensionHook);
+      if (this.hasView()) {
+         extensionHook.getHookMenu().addHelpMenuItem(this.getMenuTipsAndTricks());
+      }
 
-    private ZapMenuItem menuTipsAndTricks = null;
-    private TipsAndTricksDialog dialog = null;
+   }
 
-    private List<String> tipsAndTricks = null;
-    private Random random = new Random();
+   @Override
+   public boolean canUnload() {
+      return true;
+   }
 
-    public ExtensionTipsAndTricks() {
-        super(NAME);
-    }
+   private ZapMenuItem getMenuTipsAndTricks() {
+      if (this.menuTipsAndTricks == null) {
+         this.menuTipsAndTricks = new ZapMenuItem("tips.topmenu.help.tips");
+         this.menuTipsAndTricks.addActionListener((e) -> {
+            this.displayRandomTip();
+         });
+      }
 
-    @Override
-    public void hook(ExtensionHook extensionHook) {
-        super.hook(extensionHook);
+      return this.menuTipsAndTricks;
+   }
 
-        if (hasView()) {
-            extensionHook.getHookMenu().addHelpMenuItem(getMenuTipsAndTricks());
-        }
-    }
+   private List<String> getTipsAndTricks() {
+      if (this.tipsAndTricks == null) {
+         this.tipsAndTricks = new ArrayList<>();
+         ResourceBundle rb = Constant.messages.getMessageBundle("tips");
+         Enumeration<String> enm = rb.getKeys();
 
-    @Override
-    public boolean canUnload() {
-        return true;
-    }
-
-    private ZapMenuItem getMenuTipsAndTricks() {
-        if (menuTipsAndTricks == null) {
-            menuTipsAndTricks = new ZapMenuItem(PREFIX + ".topmenu.help.tips");
-
-            menuTipsAndTricks.addActionListener(e -> displayRandomTip());
-        }
-        return menuTipsAndTricks;
-    }
-
-    private List<String> getTipsAndTricks() {
-        if (tipsAndTricks == null) {
-            // Need to load them in
-            tipsAndTricks = new ArrayList<>();
-
-            ResourceBundle rb = Constant.messages.getMessageBundle(PREFIX);
-            Enumeration<String> enm = rb.getKeys();
-            while (enm.hasMoreElements()) {
-                String key = enm.nextElement();
-                if (key.startsWith(TIPS_PREFIX)) {
-                    tipsAndTricks.add(/*Constant.messages.getString(key)*/ rb.getString(key));
-                }
+         while(enm.hasMoreElements()) {
+            String key = enm.nextElement();
+            if (key.startsWith("tips.tip.")) {
+               this.tipsAndTricks.add(rb.getString(key));
             }
+         }
 
-            if (tipsAndTricks.isEmpty()) {
-                this.getMenuTipsAndTricks().setEnabled(false);
+         if (this.tipsAndTricks.isEmpty()) {
+            this.getMenuTipsAndTricks().setEnabled(false);
+         }
+      }
+
+      return this.tipsAndTricks;
+   }
+
+   public String getRandomTip() {
+      return this.getTipsAndTricks().get(this.random.nextInt(this.getTipsAndTricks().size()));
+   }
+
+   private void displayRandomTip() {
+      this.getTipsAndTricksDialog().displayTip();
+   }
+
+   private TipsAndTricksDialog getTipsAndTricksDialog() {
+      if (this.dialog == null) {
+         this.dialog = new TipsAndTricksDialog(this, View.getSingleton().getMainFrame());
+      }
+
+      return this.dialog;
+   }
+
+   @Override
+   public String getDescription() {
+      return Constant.messages.getString("tips.desc");
+   }
+
+   public static void main(String[] params) {
+      Properties props = new Properties();
+      File f = new File("src/org/zaproxy/zap/extension/tips/resources/Messages.properties");
+
+      try {
+         props.load(new FileReader(f));
+         File helpFile = new File("src/org/zaproxy/zap/extension/tips/resources/help/contents/tips.html");
+         FileWriter fw = new FileWriter(helpFile);
+         fw.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n");
+         fw.write("<HTML>\n");
+         fw.write("<HEAD>\n");
+         fw.write("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n");
+         fw.write("<TITLE>\n");
+         fw.write("Tips and Tricks\n");
+         fw.write("</TITLE>\n");
+         fw.write("</HEAD>\n");
+         fw.write("<BODY BGCOLOR=\"#ffffff\">\n");
+         fw.write("<H1>Tips and Tricks</H1>\n");
+         fw.write("<!-- Note that this file is generated by ExtensionTipsAndTricks-->\n");
+         fw.write("This add-on adds a 'help' menu item which displays useful ZAP tips and tricks.<br>\n");
+         fw.write("Tips are also shown in the splash screen on start up.\n");
+         fw.write("<H2>Full list of tips</H2>\n");
+         Set<Object> keys = props.keySet();
+         List<String> list = new ArrayList<>();
+        //  Iterator var7 = keys.iterator();
+
+        //  while(var7.hasNext()) {
+        //     Object key = var7.next();
+        //     if (key.toString().startsWith("tips.tip.")) {
+        //        list.add(props.getProperty(key.toString()));
+        //     }
+        //  }
+
+        for (Object key : keys) {
+            if (key.toString().startsWith(TIPS_PREFIX)) {
+                list.add(props.getProperty(key.toString()));
             }
         }
-        return this.tipsAndTricks;
-    }
 
-    public String getRandomTip() {
-        return this.getTipsAndTricks().get(random.nextInt(this.getTipsAndTricks().size()));
-    }
-
-    private void displayRandomTip() {
-        this.getTipsAndTricksDialog().displayTip();
-    }
-
-    private TipsAndTricksDialog getTipsAndTricksDialog() {
-        if (dialog == null) {
-            dialog = new TipsAndTricksDialog(this, View.getSingleton().getMainFrame());
+         Collections.sort(list);
+        //  var7 = list.iterator();
+         
+        for (String tip : list) {
+            fw.write("\n<p>" + tip.replace("\n", "<br>\n") + " </p>\n\n");
         }
-        return dialog;
-    }
 
-    @Override
-    public String getDescription() {
-        return Constant.messages.getString(PREFIX + ".desc");
-    }
+        //  while(var7.hasNext()) {
+        //     String tip = (String)var7.next();
+        //     fw.write("\n<p>" + tip.replace("\n", "<br>\n") + " </p>\n\n");
+        //  }
 
-    /**
-     * Generate the help file including all of the tips
-     *
-     * @param params
-     */
-    public static void main(String[] params) {
-        Properties props = new Properties();
-        File f = new File("src/org/zaproxy/zap/extension/tips/resources/Messages.properties");
-        try {
-            props.load(new FileReader(f));
+         fw.write("</BODY>\n");
+         fw.write("</HTML>\n");
+         fw.close();
+         System.out.println("Help file generated: " + helpFile.getAbsolutePath());
+      } catch (Exception var9) {
+         var9.printStackTrace();
+      }
 
-            File helpFile =
-                    new File(
-                            "src/org/zaproxy/zap/extension/tips/resources/help/contents/tips.html");
-            FileWriter fw = new FileWriter(helpFile);
-
-            fw.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n");
-            fw.write("<HTML>\n");
-            fw.write("<HEAD>\n");
-            fw.write("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n");
-            fw.write("<TITLE>\n");
-            fw.write("Tips and Tricks\n");
-            fw.write("</TITLE>\n");
-            fw.write("</HEAD>\n");
-            fw.write("<BODY BGCOLOR=\"#ffffff\">\n");
-            fw.write("<H1>Tips and Tricks</H1>\n");
-            fw.write("<!-- Note that this file is generated by ExtensionTipsAndTricks-->\n");
-            fw.write(
-                    "This add-on adds a 'help' menu item which displays useful ZAP tips and tricks.<br>\n");
-            fw.write("Tips are also shown in the splash screen on start up.\n");
-            fw.write("<H2>Full list of tips</H2>\n");
-
-            Set<Object> keys = props.keySet();
-            List<String> list = new ArrayList<>();
-            for (Object key : keys) {
-                if (key.toString().startsWith(TIPS_PREFIX)) {
-                    list.add(props.getProperty(key.toString()));
-                }
-            }
-            Collections.sort(list);
-            for (String tip : list) {
-                fw.write("\n<p>" + tip.replace("\n", "<br>\n") + " </p>\n\n");
-            }
-
-            fw.write("</BODY>\n");
-            fw.write("</HTML>\n");
-            fw.close();
-
-            System.out.println("Help file generated: " + helpFile.getAbsolutePath());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+   }
 }
