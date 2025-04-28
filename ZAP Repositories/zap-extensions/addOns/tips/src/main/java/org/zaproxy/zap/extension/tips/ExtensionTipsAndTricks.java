@@ -100,11 +100,11 @@ public class ExtensionTipsAndTricks extends ExtensionAdaptor {
 
    public static void main(String[] params) {
       Properties props = new Properties();
-      File f = new File("src/org/zaproxy/zap/extension/tips/resources/Messages.properties");
+      File f = new File("resources/org/zaproxy/zap/extension/tips/resources/Messages.properties");
 
       try {
          props.load(new FileReader(f));
-         File helpFile = new File("src/org/zaproxy/zap/extension/tips/resources/help/contents/tips.html");
+         File helpFile = new File("javahelp/org/zaproxy/zap/extension/tips/resources/help/contents/tips.html");
          FileWriter fw = new FileWriter(helpFile);
          fw.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n");
          fw.write("<HTML>\n");

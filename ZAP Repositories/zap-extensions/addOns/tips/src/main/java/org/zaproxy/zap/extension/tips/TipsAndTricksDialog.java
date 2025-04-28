@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.extension.AbstractDialog;
 import org.parosproxy.paros.model.Model;
+import org.parosproxy.paros.view.View;
 import org.zaproxy.zap.extension.help.ExtensionHelp;
 import org.zaproxy.zap.utils.ZapTextArea;
 import org.zaproxy.zap.view.LayoutHelper;
@@ -81,6 +82,7 @@ public class TipsAndTricksDialog extends AbstractDialog {
          this.btnAllTips.setText(Constant.messages.getString("tips.button.allTips"));
          this.btnAllTips.addActionListener((e) -> {
             ExtensionHelp.showHelp("tips");
+
          });
       }
 
