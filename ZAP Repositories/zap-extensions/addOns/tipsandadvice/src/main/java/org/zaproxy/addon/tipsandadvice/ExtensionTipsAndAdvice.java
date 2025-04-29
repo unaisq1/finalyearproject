@@ -52,6 +52,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -59,9 +60,11 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.JTree.DynamicUtilTreeNode;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hsqldb.rights.Right;
 import org.parosproxy.paros.Constant;
 import org.parosproxy.paros.control.MenuFileControl;
 import org.parosproxy.paros.control.AbstractControl;
@@ -177,7 +180,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     {
         View.getSingleton()
                 .showMessageDialog(
-                        Constant.messages.getString(getRandomTip()));
+                        getRandomTip());
     }
 
     private String getTip(String category, int number)
@@ -212,19 +215,12 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     @Override
     public boolean canUnload() {
-        // The extension can be dynamically unloaded, all resources used/added can be freed/removed
-        // from core.
         return true;
     }
 
     @Override
     public void unload() {
         super.unload();
-        // In this example it's not necessary to override the method, as there's nothing to unload
-        // manually, the components added through the class ExtensionHook (in hook(ExtensionHook))
-        // are automatically removed by the base unload() method.
-        // If you use/add other components through other methods you might need to free/remove them
-        // here (if the extension declares that can be unloaded, see above method).
     }
 
     private RightClickMsgMenu getPopupMsgMenuExample() {
@@ -297,41 +293,38 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return statusPanel;
     }
 
-//    private JTextPane displayTip()
-//    {
 
-//    }
-
-   private JTree createAllTipsList()
+   private void displayTips(DefaultMutableTreeNode category)
    {
-        DefaultMutableTreeNode categories = new DefaultMutableTreeNode("Categories: ");
-        DefaultMutableTreeNode general = new DefaultMutableTreeNode("General: ");
-        DefaultMutableTreeNode ui = new DefaultMutableTreeNode("User Interface");
-        DefaultMutableTreeNode addon = new DefaultMutableTreeNode("Add-ons");
-        
-        categories.add(general);
-        categories.add(ui);
-        categories.add(addon);
-    
-        JTree allTips = new JTree(categories);
-        allTips.setSize(400, 500);
 
-        MouseListener ml = new MouseAdapter()
+        if (category.toString() == "General: ")
         {
-            @Override
-            public void mousePressed(MouseEvent e)
-            {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) allTips.getSelectionPath().getLastPathComponent();
-                if (node == general)
-                {
-                    displayRandomTip();
-                }
-            }
-        };
+            displaySpecificTip("gen", 1);
+        }
+        if (category.toString() == "User Interface: ")
+        {
+            displaySpecificTip("ui", 2);
+        }
+        if (category.toString() == "Add-ons: ")
+        {
+            displaySpecificTip("add", 3);
+        }
+   }
 
-        allTips.addMouseListener(ml);
+   private JTextPane createTipsDisplay()
+   {
+        JTextPane tipsSide = new JTextPane();
+        tipsSide.setEditable(false);
+        tipsSide.setFont(FontUtils.getFont("Inter", Font.PLAIN));
+        tipsSide.setContentType("text/html");
+        tipsSide.setSize(400, 500);
+        tipsSide.setText("<html><b>Tips: </b></html>");
+        
+        // String message = "<html><b>Random Tip:</b><br><br>"
+        //  + getRandomTip() 
+        //  +"</html>";
 
-        return allTips;
+        return tipsSide;
    }
 
    private void openAllTipsWindow()
@@ -341,11 +334,74 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         frame.setLayout(new BorderLayout(10,5));
         frame.setTitle("Tips and Tricks");
         frame.setSize(800,500);
+        frame.setBackground(new java.awt.Color(255, 254, 192));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JTextPane newTipsDisplay = createTipsDisplay();
+        frame.add(newTipsDisplay, BorderLayout.EAST);
+
+        DefaultMutableTreeNode categories = new DefaultMutableTreeNode("Categories: ");
+        DefaultMutableTreeNode general = new DefaultMutableTreeNode("General: ");
+        DefaultMutableTreeNode ui = new DefaultMutableTreeNode("User Interface: ");
+        DefaultMutableTreeNode addon = new DefaultMutableTreeNode("Add-ons: ");
         
-        JTree newHelpWindow = createAllTipsList();
-        frame.add(newHelpWindow, BorderLayout.WEST);
+        categories.add(general);
+        categories.add(ui);
+        categories.add(addon);
+    
+        JTree allTips = new JTree(categories);
+        allTips.setSize(400, 500);
+        frame.add(allTips, BorderLayout.WEST);
+
+        MouseListener ml = new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) allTips.getSelectionPath().getLastPathComponent();
+                if (node == general)
+                {
+                    displayTips(general);
+                }
+                if (node == ui)
+                {   
+                    displayTips(ui);
+                }
+                if (node == addon)
+                {   
+                    displayTips(addon);
+                }
+                //displayRandomTip();
+            }
+        };
+
+        allTips.addMouseListener(ml);
+
+
+
+        // MouseListener ml = new MouseAdapter()
+        // {
+        //     @Override
+        //     public void mousePressed(MouseEvent e)
+        //     {
+        //         DefaultMutableTreeNode node = (DefaultMutableTreeNode) newHelpWindow.getSelectionPath().getLastPathComponent();
+        //         if (node == findTreeNode(newHelpWindow, "general"))
+        //         {
+        //             displayTips(findTreeNode(newHelpWindow, "general"));
+        //         }
+        //         if (node == findTreeNode(newHelpWindow, "ui"))
+        //         {
+        //             displayTips(findTreeNode(newHelpWindow, "ui"));
+        //         }
+        //         if (node == findTreeNode(newHelpWindow, "addon"))
+        //         {
+        //             displayTips(findTreeNode(newHelpWindow, "addon"));
+        //         }
+        //     }
+        // };
+
+        // newHelpWindow.addMouseListener(ml);
 
         frame.setVisible(true);
     }
