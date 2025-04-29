@@ -26,27 +26,39 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Enumeration;
+import java.util.Dictionary;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTree;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,6 +77,8 @@ import org.zaproxy.zap.utils.FontUtils;
 import org.zaproxy.zap.utils.ZapTextArea;
 import org.zaproxy.zap.view.LayoutHelper;
 import org.zaproxy.zap.view.ZapMenuItem;
+
+//import com.formdev.flatlaf.ui.FlatListCellBorder.Default;
 
 /**
  * An example ZAP extension which adds a top level menu item, a pop up menu item and a status panel.
@@ -115,7 +129,8 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             while(enm.hasMoreElements()) {
                String key = enm.nextElement();
                if (key.startsWith("tipsandadvice.tip.")) {
-                  this.tips.add(rb.getString(key));
+                  //this.tips.add(rb.getString(key));
+                  this.tips.add(key); //Stores as a key rather than a string (for categorisation)
                }
             }
          }
@@ -123,11 +138,39 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
          return this.tips;
     }
 
+    private String getRandomCategory()
+    {
+        String category = null;
+
+        Dictionary<Integer, String> cat = new Hashtable<>();
+
+        cat.put(0, "gen");
+        cat.put(1, "ui");
+        cat.put(2, "add");
+
+        int random = (int)(Math.random() * (cat.size()));
+
+        category = cat.get(random);
+        
+        return category;
+    }
+
     private String getRandomTip()
     {
-        int tipNumber = (int)(Math.random() * (this.tips.size() - 1));
+        List<String> tempList = new ArrayList<>();
+        String category = getRandomCategory();
 
-        return (PREFIX + ".tip." + tipNumber);
+        for (String i : this.tips)
+        {
+            if (i.startsWith(PREFIX + ".tip." + category + "."))
+            {
+                tempList.add(i);
+            }
+        }
+
+        String selectedTipKey = tempList.get((int)(Math.random() * tempList.size()));
+
+        return Constant.messages.getString(selectedTipKey);
     }
 
     private void displayRandomTip()
@@ -137,16 +180,16 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                         Constant.messages.getString(getRandomTip()));
     }
 
-    private String getSpecificTip(int number)
+    private String getTip(String category, int number)
     {
-        return (PREFIX + ".tip." + number);
+        return (PREFIX + ".tip." + category + "." + number);
     }
 
-    private void displaySpecificTip(int number)
+    private void displaySpecificTip(String category, int number)
     {
         View.getSingleton()
                 .showMessageDialog(
-                        Constant.messages.getString(getSpecificTip(number)));
+                        Constant.messages.getString(getTip(category, number)));
     }
 
     @Override
@@ -157,15 +200,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         extensionHook.addApiImplementor(this.api);
 
         getTips();
-
-        // ArrayList<String> tips = new ArrayList<String>();
-        // ResourceBundle bundle = Constant.messages.getMessageBundle(PREFIX + ".tip.");
-        // Enumeration keys = bundle.getKeys();
-
-        // for (key : bundle)
-        // {
-
-        // }
 
         // As long as we're not running as a daemon
         if (hasView()) {
@@ -204,9 +238,10 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     private void setPaneText(JTextPane pane)
     {
+
         pane.setText("<html>" + 
             "<b>Tip of the Day:</b><br><br>" + 
-            Constant.messages.getString(getRandomTip()) + 
+            getRandomTip() + 
             "<br><br>Would you like to know more about ... ?" + 
         "</html>");
     }
@@ -262,32 +297,72 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return statusPanel;
     }
 
-    // private ZapMenuItem getMenuTipsAndAdvice() {
-    //     if (menuTipsAndAdvice == null) {
-    //         menuTipsAndAdvice = new ZapMenuItem(PREFIX + ".topmenu.help.title");
+//    private JTextPane displayTip()
+//    {
 
-    //         menuTipsAndAdvice.addActionListener(
-    //                 e -> {
-    //                     displayRandomTip();
-    //                 });
-    //     }
-    //     return menuTipsAndAdvice;
-    // }
+//    }
+
+   private JTree createAllTipsList()
+   {
+        DefaultMutableTreeNode categories = new DefaultMutableTreeNode("Categories: ");
+        DefaultMutableTreeNode general = new DefaultMutableTreeNode("General: ");
+        DefaultMutableTreeNode ui = new DefaultMutableTreeNode("User Interface");
+        DefaultMutableTreeNode addon = new DefaultMutableTreeNode("Add-ons");
+        
+        categories.add(general);
+        categories.add(ui);
+        categories.add(addon);
+    
+        JTree allTips = new JTree(categories);
+        allTips.setSize(400, 500);
+
+        MouseListener ml = new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) allTips.getSelectionPath().getLastPathComponent();
+                if (node == general)
+                {
+                    displayRandomTip();
+                }
+            }
+        };
+
+        allTips.addMouseListener(ml);
+
+        return allTips;
+   }
+
+   private void openAllTipsWindow()
+    {
+        JFrame frame = new JFrame();
+        frame.setResizable(false);
+        frame.setLayout(new BorderLayout(10,5));
+        frame.setTitle("Tips and Tricks");
+        frame.setSize(800,500);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        JTree newHelpWindow = createAllTipsList();
+        frame.add(newHelpWindow, BorderLayout.WEST);
+
+        frame.setVisible(true);
+    }
+   
 
    private String setPanelText()
     {
-        String tip = Constant.messages.getString(getRandomTip());
         String message = "<html><b>Random Tip:</b><br><br>"
-         + tip 
+         + getRandomTip() 
          +"</html>";
-        
-        //String message = tip;
 
         return message;
     }
 
 
-   private JPanel createHelpWindow() {
+   private JPanel createHelpWindow() 
+   {
     JPanel helpWindow = new JPanel();
     helpWindow.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
     helpWindow.setBackground(new java.awt.Color(255, 254, 192));
@@ -312,59 +387,45 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     JPanel buttons = new JPanel();
 
-    Icon prevIcon = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButton.png"));
-    JButton prev = new JButton(prevIcon);
-    prev.setBounds(0, 200, 30, 30);
-    buttons.add(prev);
-    prev.addActionListener(new ActionListener() {
+    Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
+    JButton next = new JButton(nextIcon);  
+    next.setBounds(40, 200, 30, 30);
+    buttons.add(next);
+    next.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             text.setText(setPanelText());
         }
     });
-    // Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
-    // JButton next = new JButton(nextIcon);  
-    // next.setBounds(40, 200, 30, 30);
-    // buttons.add(next);
-    // next.addActionListener(new ActionListener() {
-    //     @Override
-    //     public void actionPerformed(ActionEvent e) {
-    //         text.setText(setPanelText());
-    //     }
-    // });
 
     JButton allTips = new JButton();
     allTips.setText(Constant.messages.getString("tips.button.allTips"));
     allTips.setBounds(20, 250, 80, 40);
     buttons.add(allTips);
     allTips.addActionListener((e) -> {
-        ExtensionHelp.showHelp("simple");
-        //call another function to load more tips
+        openAllTipsWindow();
     });
     helpWindow.add(buttons, BorderLayout.SOUTH);
 
-    //helpWindow.centreDialog();
-    //helpWindow.getRootPane().setDefaultButton(this.btnNextTip);
-    //this.pack();
-
     return helpWindow;
+
    }
 
    private void openHelpWindow()
    {
-    JFrame frame = new JFrame();
-    frame.setResizable(false);
-    frame.setLayout(new BorderLayout(10,5));
-    frame.setTitle("Tips and Advice");
-    frame.setSize(800,500);
-    frame.setLocationRelativeTo(null);
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    
-    JPanel newHelpWindow = createHelpWindow();
-    frame.add(newHelpWindow);
-    
+        JFrame frame = new JFrame();
+        frame.setResizable(false);
+        frame.setLayout(new BorderLayout(10,5));
+        frame.setTitle("Tips and Advice");
+        frame.setSize(800,500);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        JPanel newHelpWindow = createHelpWindow();
+        frame.add(newHelpWindow);
+        
 
-    frame.setVisible(true);
+        frame.setVisible(true);
    }
 
 
