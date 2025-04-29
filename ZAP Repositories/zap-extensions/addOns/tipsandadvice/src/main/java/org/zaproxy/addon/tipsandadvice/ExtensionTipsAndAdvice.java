@@ -185,7 +185,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     private String getTip(String category, int number)
     {
-        return (PREFIX + ".tip." + category + "." + number);
+        return Constant.messages.getString(PREFIX + ".tip." + category + "." + number);
     }
 
     private void displaySpecificTip(String category, int number)
@@ -293,22 +293,62 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return statusPanel;
     }
 
-
-   private void displayTips(DefaultMutableTreeNode category)
+   private String createTipsMessage(String prefix)
    {
+        List<String> parts = new ArrayList<>();
+        String message = ""; 
+        if (prefix == "gen")
+        {
+            parts.add("<html><b>General Tips: </b><br><br>");
+        }
+        if (prefix == "ui")
+        {
+            parts.add("<html><b>User Interface Tips: </b><br><br>");
+        }      
+        if (prefix == "add")
+        {
+            parts.add("<html><b>Add-on Tips: </b><br><br>");
+        }         
+        //parts.add("<html><b>General Tips: </b><br><br>");
+        for (String i : this.tips)
+        {
+            if (i.startsWith(PREFIX + ".tip." + prefix + "."))
+            {
+                parts.add(Constant.messages.getString(i));
+                parts.add("<br>");
+            }
+        }
+        parts.add("</html>");
 
+        for (int i = 0; i < parts.size(); i++)
+        {
+            message += parts.get(i);
+        }
+
+        return message;
+   }
+
+   private String displayTips(DefaultMutableTreeNode category)
+   {
+        String message = "";
+        String categoryPrefix = "";
         if (category.toString() == "General: ")
         {
-            displaySpecificTip("gen", 1);
+            categoryPrefix = "gen";
+            message = createTipsMessage(categoryPrefix);
         }
         if (category.toString() == "User Interface: ")
         {
-            displaySpecificTip("ui", 2);
+            categoryPrefix = "ui";
+            message = createTipsMessage(categoryPrefix);
         }
         if (category.toString() == "Add-ons: ")
         {
-            displaySpecificTip("add", 3);
+            categoryPrefix = "add";
+            message = createTipsMessage(categoryPrefix);
         }
+
+        return message;
    }
 
    private JTextPane createTipsDisplay()
@@ -362,15 +402,15 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) allTips.getSelectionPath().getLastPathComponent();
                 if (node == general)
                 {
-                    displayTips(general);
+                    newTipsDisplay.setText(displayTips(general));
                 }
                 if (node == ui)
                 {   
-                    displayTips(ui);
+                    newTipsDisplay.setText(displayTips(ui));
                 }
                 if (node == addon)
                 {   
-                    displayTips(addon);
+                    newTipsDisplay.setText(displayTips(addon));
                 }
                 //displayRandomTip();
             }
