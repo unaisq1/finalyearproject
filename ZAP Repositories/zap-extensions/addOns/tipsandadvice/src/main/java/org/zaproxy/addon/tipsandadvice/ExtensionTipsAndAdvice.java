@@ -19,62 +19,43 @@
  */
 package org.zaproxy.addon.tipsandadvice;
 
-import org.parosproxy.paros.control.Control;
-
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Enumeration;
-import java.util.Dictionary;
-import java.util.Map;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
-import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.JTree.DynamicUtilTreeNode;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hsqldb.rights.Right;
 import org.parosproxy.paros.Constant;
-import org.parosproxy.paros.control.MenuFileControl;
-import org.parosproxy.paros.control.AbstractControl;
 import org.parosproxy.paros.extension.AbstractPanel;
-import org.parosproxy.paros.extension.AbstractDialog;
 import org.parosproxy.paros.extension.ExtensionAdaptor;
 import org.parosproxy.paros.extension.ExtensionHook;
-import org.parosproxy.paros.extension.ExtensionLoader;
-import org.parosproxy.paros.model.Model;
 import org.parosproxy.paros.view.View;
-import org.zaproxy.zap.extension.help.ExtensionHelp;
 import org.zaproxy.zap.utils.FontUtils;
-import org.zaproxy.zap.utils.ZapTextArea;
-import org.zaproxy.zap.view.LayoutHelper;
 import org.zaproxy.zap.view.ZapMenuItem;
 
 //import com.formdev.flatlaf.ui.FlatListCellBorder.Default;
