@@ -104,6 +104,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     private List<String> getTips()
     {
         //Code inspired by TipsAndTrick's ExtensionTipsAndTricks.java file (lines 57-76)
+        //Used to gather all tips from Messages.properties file (where lines begin with "tipsandadvice.tips.") 
         if (this.tips == null ) {
             this.tips = new ArrayList<String>();
             ResourceBundle rb = Constant.messages.getMessageBundle("tipsandadvice");
@@ -121,6 +122,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
          return this.tips;
     }
 
+    //Returns random category
     private String getRandomCategory()
     {
         String category = null;
@@ -139,6 +141,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return category;
     }
 
+    //Returns random tip as a string
     private String getRandomTip()
     {
         List<String> tempList = new ArrayList<>();
@@ -157,6 +160,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return Constant.messages.getString(selectedTipKey);
     }
 
+    //Used to display a random tip as a popup window (was mainly useful during debugging phases but is now unused)
     private void displayRandomTip()
     {
         View.getSingleton()
@@ -164,21 +168,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                         getRandomTip());
     }
 
-    // private int countFeaturedTips()
-    // {
-    //     List<String> tempList = new ArrayList<>();
-    //     String category = "feat";
-
-    //     for (String i : this.tips)
-    //     {
-    //         if (i.startsWith(PREFIX + ".tip." + category + "."))
-    //         {
-    //             tempList.add(i);
-    //         }
-    //     }
-
-    // }
-
+    //Returns a random featured tip (would be useful for different featured tips being shown every 24 hours)
     private String getRandomFeaturedTip()
     {
         List<String> tempList = new ArrayList<>();
@@ -197,6 +187,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return Constant.messages.getString(selectedTipKey);
     }
 
+    //Returns a featured tip (based on whether it should be converted to a string or a key)
     private String getFeaturedTip(boolean isConverted, int number)
     {
         if (isConverted == true)
@@ -209,21 +200,25 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         }
     }
 
+    //Returns part A of a featured tip (the second "page" of Status Panel)
     private String getFeaturedTipDescA(String featTip)
     {        
         return Constant.messages.getString(featTip + ".a");
     }
 
+    //Returns part B of a featured tip (the third "page" of Status Panel)
     private String getFeaturedTipDescB(String featTip)
     {
         return Constant.messages.getString(featTip + ".b");
     }
 
+    //Returns a specific tip in a category as a string
     private String getTip(String category, int number)
     {
         return Constant.messages.getString(PREFIX + ".tip." + category + "." + number);
     }
 
+    //Displays a specific tip in a category as a popup window (also useful for debugging phases, remains unused)
     private void displaySpecificTip(String category, int number)
     {
         View.getSingleton()
@@ -231,6 +226,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                         Constant.messages.getString(getTip(category, number)));
     }
 
+    //Popup window to inform the user to go to the Status Panel and see the Tip of the Day
     private void newTipOfTheDay()
     {
         //Planned to run when a new tip of the day is made available (on a 24-hr basis)
@@ -239,6 +235,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     }
 
+    //Method that runs as ZAP loads
     @Override
     public void hook(ExtensionHook extensionHook) {
         super.hook(extensionHook);
@@ -246,8 +243,8 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         this.api = new TipsAndAdviceAPI();
         extensionHook.addApiImplementor(this.api);
 
-        getTips();
-        newTipOfTheDay();
+        getTips(); //All tips in Messages.properties are loaded to be fetched
+        newTipOfTheDay(); //Popup window runs as ZAP loads in (unfortunately ZAP cannot load in without the user clicking "OK" to the window (which was a main issue as to why popups couldn't work for this project))
 
         // As long as we're not running as a daemon
         if (hasView()) {
@@ -258,16 +255,19 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         
     }
 
+    //Unused
     @Override
     public boolean canUnload() {
         return true;
     }
 
+    //Unused
     @Override
     public void unload() {
         super.unload();
     }
 
+    //Unused (could've been developed to display a tip based on what the user was currently doing, but couldn't implement in time)
     private RightClickMsgMenu getPopupMsgMenuExample() {
         if (popupMsgMenuExample == null) {
             popupMsgMenuExample =
@@ -277,9 +277,9 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return popupMsgMenuExample;
     }
 
+    //Sets initial Status Panel text to display Tip of the Day and buttons with specific icons
     private void setPaneText(JTextPane pane, JButton prev, JButton next)
     {
-
         ExtensionTipsAndAdvice.pageIndex = 0;
         Icon prevIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButtonGrey.png")); //Source: https://www.tutorialspoint.com/how-to-add-icon-to-jbutton-in-java#:~:text=To%20add%20icon%20to%20a,an%20image%20to%20the%20button.&text=Icon%20icon%20%3D%20new%20ImageIcon(%22,button7%20%3D%20new%20JButton(icon)%3B
         ExtensionTipsAndAdvice.prev.setIcon(prevIconGrey);
@@ -291,9 +291,9 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             getFeaturedTip(true, 0) + 
             "<br><br>Click the right arrow to learn more." + 
         "</html>");  //Sources: https://stackoverflow.com/questions/9335604/java-change-font-in-a-jtextpane-containing-html/9335955#9335955 and https://stackoverflow.com/questions/9071389/setting-jtextpane-to-content-type-html-and-using-string-builders#:~:text=Every%20time%20JTextPane.,created%2C%20in%20your%20case%20HTMLDocument.
-
     }
 
+    //Runs when user clicks next on the first page or previous on the last page. Changes text and button icons accordingly.
     private void featuredTipPartA(JTextPane pane, JButton prev, JButton next)
     {
         
@@ -309,6 +309,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         
     }
 
+    //Runs when user clicks next on the second page. Changes text and button icons accordingly.
     private void featuredTipPartB(JTextPane pane, JButton prev, JButton next)
     {
         ExtensionTipsAndAdvice.pageIndex = 2;
@@ -322,9 +323,10 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         "</html>");
     }
 
+    //Loads up the Status Panel with all objects and properties
     private AbstractPanel getStatusPanel() {
         if (statusPanel == null) {
-            statusPanel = new AbstractPanel();
+            statusPanel = new AbstractPanel(); 
             statusPanel.setLayout(new CardLayout());
             statusPanel.setName(Constant.messages.getString(PREFIX + ".panel.title"));
             statusPanel.setIcon(new ImageIcon(getClass().getResource(RESOURCES + "/tipsandadvice.png")));
@@ -333,12 +335,10 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             pane.setFont(FontUtils.getFont("Inter", Font.PLAIN)); //Sources: https://www.tutorialspoint.com/how-to-set-font-for-text-in-jtextpane-with-java and https://www.tutorialspoint.com/how-to-set-style-for-jtextpane-in-java
             pane.setContentType("text/html");
 
-            //setPaneText(pane);
-
             Icon prevIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButtonGrey.png"));
             Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
             
-            ExtensionTipsAndAdvice.pageIndex = 0;
+            ExtensionTipsAndAdvice.pageIndex = 0; //Global variables used (easier to reference but less secure)
 
             ExtensionTipsAndAdvice.prev.setIcon(prevIconGrey);
             ExtensionTipsAndAdvice.next.setIcon(nextIcon);
@@ -347,6 +347,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             pane.add(ExtensionTipsAndAdvice.prev);
             pane.add(ExtensionTipsAndAdvice.next); //Source: https://stackoverflow.com/questions/15819006/adding-a-jbutton-to-a-jtextpane 
 
+            //First page
             setPaneText(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
             
             ExtensionTipsAndAdvice.prev.addActionListener(new ActionListener() { //Source: https://www.tutorialspoint.com/how-to-add-action-listener-to-jbutton-in-java
@@ -354,6 +355,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                 public void actionPerformed(ActionEvent e) {
                     if (ExtensionTipsAndAdvice.pageIndex == 1)
                     {
+                        //Page 1
                         setPaneText(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
                     }
                 }
@@ -363,6 +365,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                 public void actionPerformed(ActionEvent e) {
                     if (ExtensionTipsAndAdvice.pageIndex == 2)
                     {
+                        //Page 2
                         featuredTipPartA(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
                     }
                 }
@@ -381,6 +384,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                 public void actionPerformed(ActionEvent e) {
                     if (ExtensionTipsAndAdvice.pageIndex == 1)
                     {
+                        //Page 3
                         featuredTipPartB(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
                     }
                 }
@@ -393,6 +397,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return statusPanel;
     }
 
+    //Method used to load all tips in specific categories in the All Tips window in the Help Window
    private String createTipsMessage(String prefix)
    {
         List<String> parts = new ArrayList<>();
@@ -412,8 +417,8 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         if (prefix == "add")
         {
             parts.add("<html><b>Add-on Tips: </b><br><br>");
-        }         
-        //parts.add("<html><b>General Tips: </b><br><br>");
+        }    
+
         for (String i : this.tips)
         {
             if ((i.startsWith(PREFIX + ".tip." + prefix + ".")) && !(i.endsWith(".a") || i.endsWith(".b")))
@@ -432,6 +437,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return message;
    }
 
+   //Method used to display all tips loaded based on certain categories
    private String displayTips(DefaultMutableTreeNode category)
    {
         String message = "";
@@ -460,6 +466,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return message;
    }
 
+   //Method used to create Text Pane that would hold the text of the tips displayed
    private JTextPane createTipsDisplay()
    {
         JTextPane tipsSide = new JTextPane();
@@ -476,9 +483,10 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return tipsSide;
    }
 
+   //Method used to create and display all objects needed to assemble the All Tips window
    private void openAllTipsWindow()
     {
-        JFrame frame = new JFrame();
+        JFrame frame = new JFrame(); //Frame to hold all objects and to be the baseline window
         frame.setResizable(false);
         frame.setLayout(new BorderLayout(10,5));
         frame.setTitle("Tips and Tricks");
@@ -490,6 +498,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         JTextPane newTipsDisplay = createTipsDisplay();
         frame.add(newTipsDisplay, BorderLayout.CENTER); //Sources: https://www.youtube.com/watch?v=1G4lBJW1vfM&ab_channel=JavaCodeJunkie and https://docs.oracle.com/javase/7/docs/api/java/awt/BorderLayout.html
 
+        //The different categories for the tips, written as Tree Nodes for the JTree created to navigate each category
         DefaultMutableTreeNode categories = new DefaultMutableTreeNode("Categories: ");
         DefaultMutableTreeNode featured = new DefaultMutableTreeNode("Featured: ");
         DefaultMutableTreeNode general = new DefaultMutableTreeNode("General: ");
@@ -501,16 +510,18 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         categories.add(ui);
         categories.add(addon);
     
+        //JTree used for the format of being able to select different categories and load up each tip from their respective category. Idea based on different windows from other extensions, such as Tips and Tricks and Active Scan.
         JTree allTips = new JTree(categories); //Source: https://www.youtube.com/watch?v=ZIzRav8mmvY
         allTips.setSize(400, 500);
         frame.add(allTips, BorderLayout.WEST);
 
+        //Used to register clicks
         MouseListener ml = new MouseAdapter() //Sources: https://www.geeksforgeeks.org/mouselistener-mousemotionlistener-java/ and https://docs.oracle.com/javase/tutorial/uiswing/events/mouselistener.html
         {
             @Override
             public void mousePressed(MouseEvent e)
             {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) allTips.getSelectionPath().getLastPathComponent();
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) allTips.getSelectionPath().getLastPathComponent(); //Records which category was selected
                 if (node == featured)
                 {
                     newTipsDisplay.setText(displayTips(featured));
@@ -527,7 +538,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                 {   
                     newTipsDisplay.setText(displayTips(addon));
                 }
-                //displayRandomTip();
             }
         };
 
@@ -536,7 +546,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         frame.setVisible(true);
     }
    
-
+    //Method used to load text in the Help window (which displays a random tip, very similar to the Help window from Tips and Tricks)
    private String setPanelText()
     {
         String message = "<html><b>Random Tip:</b><br><br>"
@@ -546,7 +556,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return message;
     }
 
-
+    //Method to assemble the Help window and all of its objects and properties
    private JPanel createHelpWindow() 
    {
     JPanel helpWindow = new JPanel(); //Source: https://www.youtube.com/watch?v=4PfDdJ8GFHI&ab_channel=JavaCodeJunkie
@@ -566,6 +576,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     text.setLayout(new FlowLayout(FlowLayout.CENTER));
     text.setBackground(new java.awt.Color(255, 254, 192));
     text.setText(setPanelText());
+    text.setEditable(false);
     text.setBounds(0, 0, 300, 60);
     textSpace.add(text);
     helpWindow.add(textSpace);
@@ -598,6 +609,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
    }
 
+   //Method used to open the window created from the preivous method by creating a frame for the JPanel to be placed
    private void openHelpWindow()
    {
         JFrame frame = new JFrame();
@@ -615,45 +627,18 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         frame.setVisible(true);
    }
 
-
-    private ZapMenuItem getMenuTipsAndAdvice() {
+   //Method to display an option in the Help menu in the toolbar to open the Help window (which also leads to the All Tips window)
+   private ZapMenuItem getMenuTipsAndAdvice() 
+   {
         if (menuTipsAndAdvice == null) {
             menuTipsAndAdvice = new ZapMenuItem(PREFIX + ".topmenu.help.title");
             menuTipsAndAdvice.addActionListener(
                      e -> {
-                        openHelpWindow();
+                        openHelpWindow(); //Opens help window
                      });
         }
         return menuTipsAndAdvice;
-    }
-
-    private void displayFile(String file) {
-        if (!View.isInitialised()) {
-            // Running in daemon mode, shouldnt have been called
-            return;
-        }
-        try {
-            File f = new File(Constant.getZapHome(), file);
-            if (!f.exists()) {
-                // This is something the user should know, so show a warning dialog
-                View.getSingleton()
-                        .showWarningDialog(
-                                Constant.messages.getString(
-                                        ExtensionTipsAndAdvice.PREFIX + ".error.nofile",
-                                        f.getAbsolutePath()));
-                return;
-            }
-            // Quick way to read a small text file
-            String contents = new String(Files.readAllBytes(f.toPath()));
-            // Write to the output panel
-            View.getSingleton().getOutputPanel().append(contents);
-            // Give focus to the Output tab
-            View.getSingleton().getOutputPanel().setTabFocus();
-        } catch (Exception e) {
-            // Something unexpected went wrong, write the error to the log
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
+   }
 
     @Override
     public String getDescription() {
