@@ -107,7 +107,9 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
      */
     private static final String RESOURCES = "resources";
     private List<String> tips = null;
-    private int pageIndex = 0;
+    private static int pageIndex = 0;
+    private static JButton prev = new JButton();
+    private static JButton next = new JButton();
 
     private ZapMenuItem menuTipsAndAdvice;
     private RightClickMsgMenu popupMsgMenuExample;
@@ -199,7 +201,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     // }
 
-    private String getFeaturedTip()
+    private String getRandomFeaturedTip()
     {
         List<String> tempList = new ArrayList<>();
         String category = "feat";
@@ -215,6 +217,59 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         String selectedTipKey = tempList.get((int)(Math.random() * tempList.size()));
 
         return Constant.messages.getString(selectedTipKey);
+    }
+
+    private String getFeaturedTip(boolean isConverted, int number)
+    {
+        if (isConverted == true)
+        {
+            return Constant.messages.getString(PREFIX + ".tip." + "feat" + "." + number);  
+        }
+        else
+        {
+            return PREFIX + ".tip." + "feat" + "." + number;
+        }
+    }
+
+    private String getFeaturedTipDescA(String featTip)
+    {
+        // List<String> tempList = new ArrayList<>();
+        // String category = "feat";
+
+        // for (String i : this.tips)
+        // {
+        //     if (i.startsWith(PREFIX + ".tip." + category + ".") && !(i.endsWith(".a") || i.endsWith(".b")))
+        //     {
+        //         tempList.add(i);
+        //     }
+        // }
+
+        // String selectedTipKey = tempList.get((int)(Math.random() * tempList.size()));
+
+        // return Constant.messages.getString(selectedTipKey);
+        
+        return Constant.messages.getString(featTip + ".a");
+    }
+
+    private String getFeaturedTipDescB(String featTip)
+    {
+        // List<String> tempList = new ArrayList<>();
+        // String category = "feat";
+
+        // for (String i : this.tips)
+        // {
+        //     if (i.startsWith(PREFIX + ".tip." + category + ".") && !(i.endsWith(".a") || i.endsWith(".b")))
+        //     {
+        //         tempList.add(i);
+        //     }
+        // }
+
+        // String selectedTipKey = tempList.get((int)(Math.random() * tempList.size()));
+
+        // return Constant.messages.getString(selectedTipKey);
+
+        return Constant.messages.getString(featTip + ".b");
+
     }
 
     private String getTip(String category, int number)
@@ -266,46 +321,48 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return popupMsgMenuExample;
     }
 
-    private void setPaneText(JTextPane pane, JButton prev, JButton next, int index)
+    private void setPaneText(JTextPane pane, JButton prev, JButton next)
     {
-        index = 0;
+
+        ExtensionTipsAndAdvice.pageIndex = 0;
         Icon prevIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButtonGrey.png"));
-        prev = new JButton(prevIconGrey);
+        ExtensionTipsAndAdvice.prev.setIcon(prevIconGrey);
         Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
-        next = new JButton(nextIcon);
+        ExtensionTipsAndAdvice.next.setIcon(nextIcon);
         
         pane.setText("<html>" + 
             "<b>Tip of the Day:</b><br><br>" + 
-            getFeaturedTip() + 
+            getFeaturedTip(true, 0) + 
             "<br><br>Click the right arrow to learn more." + 
-        "</html>");
+        "</html>");  
+
     }
 
-    private void featuredTipPartA(JTextPane pane, JButton prev, JButton next, int index)
+    private void featuredTipPartA(JTextPane pane, JButton prev, JButton next)
     {
-        index = 1;
+        
+        ExtensionTipsAndAdvice.pageIndex = 1;
         Icon prevIcon = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButton.png"));
-        prev = new JButton(prevIcon);
+        ExtensionTipsAndAdvice.prev.setIcon(prevIcon);
         Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
-        next = new JButton(nextIcon);
+        ExtensionTipsAndAdvice.next.setIcon(nextIcon);
 
         pane.setText("<html>" + 
-            getFeaturedTip() + 
-            "<br><br>Click the right arrow to learn more." + 
-        "</html>");
+        getFeaturedTipDescA(getFeaturedTip(false, 0)) + 
+        "</html>"); 
+        
     }
 
-    private void featuredTipPartB(JTextPane pane, JButton prev, JButton next, int index)
+    private void featuredTipPartB(JTextPane pane, JButton prev, JButton next)
     {
-        index = 2;
+        ExtensionTipsAndAdvice.pageIndex = 2;
         Icon prevIcon = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButton.png"));
-        prev = new JButton(prevIcon);
+        ExtensionTipsAndAdvice.prev.setIcon(prevIcon);
         Icon nextIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/RightButtonGrey.png"));
-        next = new JButton(nextIconGrey);
+        ExtensionTipsAndAdvice.next.setIcon(nextIconGrey);
 
         pane.setText("<html>" + 
-            getFeaturedTip() + 
-            "<br><br>Click the right arrow to learn more." + 
+            getFeaturedTipDescB(getFeaturedTip(false, 0)) + 
         "</html>");
     }
 
@@ -317,7 +374,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             statusPanel.setIcon(new ImageIcon(getClass().getResource(RESOURCES + "/tipsandadvice.png")));
             JTextPane pane = new JTextPane();
             pane.setEditable(false);
-            // Obtain (and set) a font with the size defined in the options
             pane.setFont(FontUtils.getFont("Inter", Font.PLAIN));
             pane.setContentType("text/html");
 
@@ -325,40 +381,51 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
             Icon prevIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButtonGrey.png"));
             Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
-            JButton prev = new JButton(prevIconGrey);
-            JButton next = new JButton(nextIcon);
-            prev.setBounds(0, 100, 40, 40);
-            next.setBounds(40, 100, 40, 40);  
-            pane.add(prev);
-            pane.add(next);
-
-            this.pageIndex = 0;
-
-            setPaneText(pane, prev, next, pageIndex);
             
-            prev.addActionListener(new ActionListener() {
+            ExtensionTipsAndAdvice.pageIndex = 0;
+
+            ExtensionTipsAndAdvice.prev.setIcon(prevIconGrey);
+            ExtensionTipsAndAdvice.next.setIcon(nextIcon);
+            ExtensionTipsAndAdvice.prev.setBounds(0, 100, 40, 40);
+            ExtensionTipsAndAdvice.next.setBounds(40, 100, 40, 40);  
+            pane.add(ExtensionTipsAndAdvice.prev);
+            pane.add(ExtensionTipsAndAdvice.next);
+
+            setPaneText(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
+            
+            ExtensionTipsAndAdvice.prev.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (pageIndex == 1)
+                    if (ExtensionTipsAndAdvice.pageIndex == 1)
                     {
-                        setPaneText(pane, prev, next, pageIndex);
-                    }
-                    if (pageIndex == 2)
-                    {
-                        featuredTipPartA(pane, prev, next, pageIndex);
+                        setPaneText(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
                     }
                 }
             });
-            next.addActionListener(new ActionListener() {
+            ExtensionTipsAndAdvice.prev.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (pageIndex == 0)
+                    if (ExtensionTipsAndAdvice.pageIndex == 2)
                     {
-                        featuredTipPartA(pane, prev, next, pageIndex);
+                        featuredTipPartA(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
                     }
-                    if (pageIndex == 1)
+                }
+            });
+            ExtensionTipsAndAdvice.next.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (ExtensionTipsAndAdvice.pageIndex == 0)
                     {
-                        featuredTipPartB(pane, prev, next, pageIndex);
+                        featuredTipPartA(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
+                    }
+                }
+            });
+            ExtensionTipsAndAdvice.next.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (ExtensionTipsAndAdvice.pageIndex == 1)
+                    {
+                        featuredTipPartB(pane, ExtensionTipsAndAdvice.prev, ExtensionTipsAndAdvice.next);
                     }
                 }
             });
