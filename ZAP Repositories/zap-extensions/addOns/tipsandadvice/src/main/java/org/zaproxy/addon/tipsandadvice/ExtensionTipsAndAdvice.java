@@ -107,6 +107,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
      */
     private static final String RESOURCES = "resources";
     private List<String> tips = null;
+    private int pageIndex = 0;
 
     private ZapMenuItem menuTipsAndAdvice;
     private RightClickMsgMenu popupMsgMenuExample;
@@ -183,6 +184,39 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                         getRandomTip());
     }
 
+    // private int countFeaturedTips()
+    // {
+    //     List<String> tempList = new ArrayList<>();
+    //     String category = "feat";
+
+    //     for (String i : this.tips)
+    //     {
+    //         if (i.startsWith(PREFIX + ".tip." + category + "."))
+    //         {
+    //             tempList.add(i);
+    //         }
+    //     }
+
+    // }
+
+    private String getFeaturedTip()
+    {
+        List<String> tempList = new ArrayList<>();
+        String category = "feat";
+
+        for (String i : this.tips)
+        {
+            if (i.startsWith(PREFIX + ".tip." + category + ".") && !(i.endsWith(".a") || i.endsWith(".b")))
+            {
+                tempList.add(i);
+            }
+        }
+
+        String selectedTipKey = tempList.get((int)(Math.random() * tempList.size()));
+
+        return Constant.messages.getString(selectedTipKey);
+    }
+
     private String getTip(String category, int number)
     {
         return Constant.messages.getString(PREFIX + ".tip." + category + "." + number);
@@ -232,13 +266,46 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         return popupMsgMenuExample;
     }
 
-    private void setPaneText(JTextPane pane)
+    private void setPaneText(JTextPane pane, JButton prev, JButton next, int index)
     {
-
+        index = 0;
+        Icon prevIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButtonGrey.png"));
+        prev = new JButton(prevIconGrey);
+        Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
+        next = new JButton(nextIcon);
+        
         pane.setText("<html>" + 
             "<b>Tip of the Day:</b><br><br>" + 
-            getRandomTip() + 
-            "<br><br>Would you like to know more about ... ?" + 
+            getFeaturedTip() + 
+            "<br><br>Click the right arrow to learn more." + 
+        "</html>");
+    }
+
+    private void featuredTipPartA(JTextPane pane, JButton prev, JButton next, int index)
+    {
+        index = 1;
+        Icon prevIcon = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButton.png"));
+        prev = new JButton(prevIcon);
+        Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
+        next = new JButton(nextIcon);
+
+        pane.setText("<html>" + 
+            getFeaturedTip() + 
+            "<br><br>Click the right arrow to learn more." + 
+        "</html>");
+    }
+
+    private void featuredTipPartB(JTextPane pane, JButton prev, JButton next, int index)
+    {
+        index = 2;
+        Icon prevIcon = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButton.png"));
+        prev = new JButton(prevIcon);
+        Icon nextIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/RightButtonGrey.png"));
+        next = new JButton(nextIconGrey);
+
+        pane.setText("<html>" + 
+            getFeaturedTip() + 
+            "<br><br>Click the right arrow to learn more." + 
         "</html>");
     }
 
@@ -254,36 +321,46 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             pane.setFont(FontUtils.getFont("Inter", Font.PLAIN));
             pane.setContentType("text/html");
 
-            setPaneText(pane);
+            //setPaneText(pane);
 
-            Icon prevIcon = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButton.png"));
+            Icon prevIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/LeftButtonGrey.png"));
             Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
-            JButton prev = new JButton(prevIcon);
+            JButton prev = new JButton(prevIconGrey);
             JButton next = new JButton(nextIcon);
             prev.setBounds(0, 100, 40, 40);
+            next.setBounds(40, 100, 40, 40);  
             pane.add(prev);
+            pane.add(next);
+
+            this.pageIndex = 0;
+
+            setPaneText(pane, prev, next, pageIndex);
+            
             prev.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    setPaneText(pane);
+                    if (pageIndex == 1)
+                    {
+                        setPaneText(pane, prev, next, pageIndex);
+                    }
+                    if (pageIndex == 2)
+                    {
+                        featuredTipPartA(pane, prev, next, pageIndex);
+                    }
                 }
             });
-            next.setBounds(40, 100, 40, 40);
-            pane.add(next);
             next.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    setPaneText(pane);
+                    if (pageIndex == 0)
+                    {
+                        featuredTipPartA(pane, prev, next, pageIndex);
+                    }
+                    if (pageIndex == 1)
+                    {
+                        featuredTipPartB(pane, prev, next, pageIndex);
+                    }
                 }
-            });
-
-            JButton allTips = new JButton();
-            allTips.setText(Constant.messages.getString("tips.button.allTips"));
-            allTips.setBounds(80, 100, 80, 40);
-            pane.add(allTips);
-            allTips.addActionListener((e) -> {
-                ExtensionHelp.showHelp("simple");
-
             });
 
             pane.setBackground(new java.awt.Color(255, 254, 192));
@@ -418,31 +495,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
         allTips.addMouseListener(ml);
 
-
-
-        // MouseListener ml = new MouseAdapter()
-        // {
-        //     @Override
-        //     public void mousePressed(MouseEvent e)
-        //     {
-        //         DefaultMutableTreeNode node = (DefaultMutableTreeNode) newHelpWindow.getSelectionPath().getLastPathComponent();
-        //         if (node == findTreeNode(newHelpWindow, "general"))
-        //         {
-        //             displayTips(findTreeNode(newHelpWindow, "general"));
-        //         }
-        //         if (node == findTreeNode(newHelpWindow, "ui"))
-        //         {
-        //             displayTips(findTreeNode(newHelpWindow, "ui"));
-        //         }
-        //         if (node == findTreeNode(newHelpWindow, "addon"))
-        //         {
-        //             displayTips(findTreeNode(newHelpWindow, "addon"));
-        //         }
-        //     }
-        // };
-
-        // newHelpWindow.addMouseListener(ml);
-
         frame.setVisible(true);
     }
    
@@ -483,8 +535,9 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
     JPanel buttons = new JPanel();
 
-    Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
-    JButton next = new JButton(nextIcon);  
+    //Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
+    JButton next = new JButton();  
+    next.setText(Constant.messages.getString("tipsandadvice.button.allTips"));
     next.setBounds(40, 200, 30, 30);
     buttons.add(next);
     next.addActionListener(new ActionListener() {
@@ -495,7 +548,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     });
 
     JButton allTips = new JButton();
-    allTips.setText(Constant.messages.getString("tips.button.allTips"));
+    allTips.setText(Constant.messages.getString("tipsandadvice.button.next"));
     allTips.setBounds(20, 250, 80, 40);
     buttons.add(allTips);
     allTips.addActionListener((e) -> {
@@ -513,7 +566,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         frame.setResizable(false);
         frame.setLayout(new BorderLayout(10,5));
         frame.setTitle("Tips and Advice");
-        frame.setSize(800,500);
+        frame.setSize(300,250);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
