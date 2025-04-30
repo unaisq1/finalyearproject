@@ -91,8 +91,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     private RightClickMsgMenu popupMsgMenuExample;
     private AbstractPanel statusPanel;
 
-    private TipsAndAdviceAPI api;
-
     private static final Logger LOGGER = LogManager.getLogger(ExtensionTipsAndAdvice.class);
 
     public ExtensionTipsAndAdvice() {
@@ -238,9 +236,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     @Override
     public void hook(ExtensionHook extensionHook) {
         super.hook(extensionHook);
-
-        this.api = new TipsAndAdviceAPI();
-        extensionHook.addApiImplementor(this.api);
 
         getTips(); //All tips in Messages.properties are loaded to be fetched
         newTipOfTheDay(); //Popup window runs as ZAP loads in (unfortunately ZAP cannot load in without the user clicking "OK" to the window (which was a main issue as to why popups couldn't work for this project))
