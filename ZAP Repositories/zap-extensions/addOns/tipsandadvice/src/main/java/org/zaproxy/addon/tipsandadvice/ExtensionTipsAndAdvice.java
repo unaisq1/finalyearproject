@@ -153,6 +153,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         cat.put(0, "gen");
         cat.put(1, "ui");
         cat.put(2, "add");
+        cat.put(3, "feat");
 
         int random = (int)(Math.random() * (cat.size()));
 
@@ -168,7 +169,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
         for (String i : this.tips)
         {
-            if (i.startsWith(PREFIX + ".tip." + category + "."))
+            if (i.startsWith(PREFIX + ".tip." + category + ".") && !(i.endsWith(".a") || i.endsWith(".b")))
             {
                 tempList.add(i);
             }
@@ -284,6 +285,14 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
                         Constant.messages.getString(getTip(category, number)));
     }
 
+    private void newTipOfTheDay()
+    {
+        //Planned to run when a new tip of the day is made available (on a 24-hr basis)
+        View.getSingleton()
+                .showMessageDialog("New daily tip available in Status Panel >> Tips and Advice!");
+
+    }
+
     @Override
     public void hook(ExtensionHook extensionHook) {
         super.hook(extensionHook);
@@ -292,6 +301,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         extensionHook.addApiImplementor(this.api);
 
         getTips();
+        newTipOfTheDay();
 
         // As long as we're not running as a daemon
         if (hasView()) {
@@ -440,7 +450,11 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
    private String createTipsMessage(String prefix)
    {
         List<String> parts = new ArrayList<>();
-        String message = ""; 
+        String message = "";
+        if (prefix == "feat")
+        {
+            parts.add("<html><b>Featured Tips: </b><br><br>");
+        }
         if (prefix == "gen")
         {
             parts.add("<html><b>General Tips: </b><br><br>");
@@ -456,7 +470,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         //parts.add("<html><b>General Tips: </b><br><br>");
         for (String i : this.tips)
         {
-            if (i.startsWith(PREFIX + ".tip." + prefix + "."))
+            if ((i.startsWith(PREFIX + ".tip." + prefix + ".")) && !(i.endsWith(".a") || i.endsWith(".b")))
             {
                 parts.add(Constant.messages.getString(i));
                 parts.add("<br>");
@@ -476,6 +490,11 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
    {
         String message = "";
         String categoryPrefix = "";
+        if (category.toString() == "Featured: ")
+        {
+            categoryPrefix = "feat";
+            message = createTipsMessage(categoryPrefix);
+        }
         if (category.toString() == "General: ")
         {
             categoryPrefix = "gen";
@@ -523,13 +542,15 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JTextPane newTipsDisplay = createTipsDisplay();
-        frame.add(newTipsDisplay, BorderLayout.EAST);
+        frame.add(newTipsDisplay, BorderLayout.CENTER);
 
         DefaultMutableTreeNode categories = new DefaultMutableTreeNode("Categories: ");
+        DefaultMutableTreeNode featured = new DefaultMutableTreeNode("Featured: ");
         DefaultMutableTreeNode general = new DefaultMutableTreeNode("General: ");
         DefaultMutableTreeNode ui = new DefaultMutableTreeNode("User Interface: ");
         DefaultMutableTreeNode addon = new DefaultMutableTreeNode("Add-ons: ");
         
+        categories.add(featured);
         categories.add(general);
         categories.add(ui);
         categories.add(addon);
@@ -544,6 +565,10 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             public void mousePressed(MouseEvent e)
             {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) allTips.getSelectionPath().getLastPathComponent();
+                if (node == featured)
+                {
+                    newTipsDisplay.setText(displayTips(featured));
+                }
                 if (node == general)
                 {
                     newTipsDisplay.setText(displayTips(general));
@@ -587,14 +612,13 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     JPanel textSpace = new JPanel();
     textSpace.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
     textSpace.setBackground(new java.awt.Color(255, 254, 192));
-    textSpace.setBorder(BorderFactory.createLineBorder(Color.black,3));
     textSpace.setSize(350, 250);
 
     JTextPane text = new JTextPane();
     text.setContentType("text/html");
     text.setFont(FontUtils.getFont("Inter", Font.PLAIN));
     text.setLayout(new FlowLayout(FlowLayout.CENTER));
-    //text.setBackground(new java.awt.Color(255, 254, 192));
+    text.setBackground(new java.awt.Color(255, 254, 192));
     text.setText(setPanelText());
     text.setBounds(0, 0, 300, 60);
     textSpace.add(text);
@@ -603,9 +627,17 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     JPanel buttons = new JPanel();
 
     //Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
+    JButton allTips = new JButton();
+    allTips.setText(Constant.messages.getString("tipsandadvice.button.allTips"));
+    //allTips.setBounds(20, 200, 80, 40);
+    buttons.add(allTips);
+    allTips.addActionListener((e) -> {
+        openAllTipsWindow();
+    });
+    
     JButton next = new JButton();  
-    next.setText(Constant.messages.getString("tipsandadvice.button.allTips"));
-    next.setBounds(40, 200, 30, 30);
+    next.setText(Constant.messages.getString("tipsandadvice.button.next"));
+    //next.setBounds(40, 200, 30, 30);
     buttons.add(next);
     next.addActionListener(new ActionListener() {
         @Override
@@ -614,13 +646,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         }
     });
 
-    JButton allTips = new JButton();
-    allTips.setText(Constant.messages.getString("tipsandadvice.button.next"));
-    allTips.setBounds(20, 250, 80, 40);
-    buttons.add(allTips);
-    allTips.addActionListener((e) -> {
-        openAllTipsWindow();
-    });
+
     helpWindow.add(buttons, BorderLayout.SOUTH);
 
     return helpWindow;
@@ -633,7 +659,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         frame.setResizable(false);
         frame.setLayout(new BorderLayout(10,5));
         frame.setTitle("Tips and Advice");
-        frame.setSize(300,250);
+        frame.setSize(600,250);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
