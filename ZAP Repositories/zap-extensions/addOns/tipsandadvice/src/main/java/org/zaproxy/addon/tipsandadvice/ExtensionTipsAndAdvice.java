@@ -21,6 +21,7 @@ package org.zaproxy.addon.tipsandadvice;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -473,10 +474,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         tipsSide.setContentType("text/html");
         tipsSide.setSize(400, 500);
         tipsSide.setText("<html><b>Tips: </b></html>");
-        
-        // String message = "<html><b>Random Tip:</b><br><br>"
-        //  + getRandomTip() 
-        //  +"</html>";
 
         return tipsSide;
    }
@@ -575,15 +572,16 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     text.setBackground(new java.awt.Color(255, 254, 192));
     text.setText(setPanelText());
     text.setEditable(false);
-    text.setBounds(0, 0, 300, 60);
+    text.setBounds(0, 0, 100, 60);
+    text.setPreferredSize(new Dimension(550, 150)); //Source: https://coderanch.com/t/331631/java/Setting-size-JTextPane
     textSpace.add(text);
     helpWindow.add(textSpace);
 
     JPanel buttons = new JPanel();
+    buttons.setBackground(new java.awt.Color(255, 254, 192));
 
     JButton allTips = new JButton();
     allTips.setText(Constant.messages.getString("tipsandadvice.button.allTips"));
-    //allTips.setBounds(20, 200, 80, 40);
     buttons.add(allTips);
     allTips.addActionListener((e) -> {
         openAllTipsWindow();
@@ -591,7 +589,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     
     JButton next = new JButton();  
     next.setText(Constant.messages.getString("tipsandadvice.button.next"));
-    //next.setBounds(40, 200, 30, 30);
     buttons.add(next);
     next.addActionListener(new ActionListener() {
         @Override
