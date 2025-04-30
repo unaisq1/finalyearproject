@@ -29,8 +29,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.io.File;
-import java.nio.file.Files;
 import java.util.ResourceBundle;
 import java.util.ArrayList;
 import java.util.Dictionary;
