@@ -1,0 +1,13 @@
+Important Files Paths:
+
+Tips and Tricks Messages.properties file (where developer-written tips are stored):
+ZAP Repositories\zap-extensions\addOns\tips\src\main\resources\org\zaproxy\zap\extension\tips\resources\Messages.properties
+
+Tips and Advice Messages.properties file (where this extension's tips are stored and fetched):
+ZAP Repositories\zap-extensions\addOns\tipsandadvice\src\main\resources\org\zaproxy\addon\tipsandadvice\resources\Messages.properties
+
+Tips and Advice Image Assets Location:
+ZAP Repositories\zap-extensions\addOns\tipsandadvice\src\main\resources\org\zaproxy\addon\tipsandadvice\resources
+
+Tips and Advice ExtensionTipsAndAdvice Java file:
+ZAP Repositories\zap-extensions\addOns\tipsandadvice\src\main\java\org\zaproxy\addon\tipsandadvice\ExtensionTipsAndAdvice.java
