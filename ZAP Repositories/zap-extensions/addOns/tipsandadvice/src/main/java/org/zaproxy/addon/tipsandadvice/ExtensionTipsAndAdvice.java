@@ -86,6 +86,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
     private static int pageIndex = 0;
     private static JButton prev = new JButton();
     private static JButton next = new JButton(); //Source: https://www.geeksforgeeks.org/difference-between-static-and-non-static-method-in-java/
+    private static String featuredTip = null;
 
     private ZapMenuItem menuTipsAndAdvice;
     private RightClickMsgMenu popupMsgMenuExample;
@@ -181,7 +182,8 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
         String selectedTipKey = tempList.get((int)(Math.random() * tempList.size()));
 
-        return Constant.messages.getString(selectedTipKey);
+        //return Constant.messages.getString(selectedTipKey);
+        return selectedTipKey;
     }
 
     //Returns a featured tip (based on whether it should be converted to a string or a key)
@@ -239,6 +241,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
 
         getTips(); //All tips in Messages.properties are loaded to be fetched
         newTipOfTheDay(); //Popup window runs as ZAP loads in (unfortunately ZAP cannot load in without the user clicking "OK" to the window (which was a main issue as to why popups couldn't work for this project))
+        ExtensionTipsAndAdvice.featuredTip = getRandomFeaturedTip();
 
         // As long as we're not running as a daemon
         if (hasView()) {
@@ -280,11 +283,17 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
         ExtensionTipsAndAdvice.next.setIcon(nextIcon);
         
+        // pane.setText("<html>" + 
+        //     "<b>Tip of the Day:</b><br><br>" + 
+        //     getFeaturedTip(true, 0) + 
+        //     "<br><br>Click the right arrow to learn more." + 
+        // "</html>");  //Sources: https://stackoverflow.com/questions/9335604/java-change-font-in-a-jtextpane-containing-html/9335955#9335955 and https://stackoverflow.com/questions/9071389/setting-jtextpane-to-content-type-html-and-using-string-builders#:~:text=Every%20time%20JTextPane.,created%2C%20in%20your%20case%20HTMLDocument.
         pane.setText("<html>" + 
             "<b>Tip of the Day:</b><br><br>" + 
-            getFeaturedTip(true, 0) + 
+            Constant.messages.getString(ExtensionTipsAndAdvice.featuredTip) + 
             "<br><br>Click the right arrow to learn more." + 
         "</html>");  //Sources: https://stackoverflow.com/questions/9335604/java-change-font-in-a-jtextpane-containing-html/9335955#9335955 and https://stackoverflow.com/questions/9071389/setting-jtextpane-to-content-type-html-and-using-string-builders#:~:text=Every%20time%20JTextPane.,created%2C%20in%20your%20case%20HTMLDocument.
+
     }
 
     //Runs when user clicks next on the first page or previous on the last page. Changes text and button icons accordingly.
@@ -297,8 +306,11 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
         ExtensionTipsAndAdvice.next.setIcon(nextIcon);
 
+        // pane.setText("<html>" + 
+        // getFeaturedTipDescA(getFeaturedTip(false, 0)) + 
+        // "</html>"); 
         pane.setText("<html>" + 
-        getFeaturedTipDescA(getFeaturedTip(false, 0)) + 
+        getFeaturedTipDescA(ExtensionTipsAndAdvice.featuredTip) + 
         "</html>"); 
         
     }
@@ -312,8 +324,11 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         Icon nextIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/RightButtonGrey.png"));
         ExtensionTipsAndAdvice.next.setIcon(nextIconGrey);
 
+        // pane.setText("<html>" + 
+        // getFeaturedTipDescB(getFeaturedTip(false, 0)) + 
+        // "</html>");
         pane.setText("<html>" + 
-            getFeaturedTipDescB(getFeaturedTip(false, 0)) + 
+        getFeaturedTipDescB(ExtensionTipsAndAdvice.featuredTip) + 
         "</html>");
     }
 
