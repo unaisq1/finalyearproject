@@ -418,7 +418,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
             if ((i.startsWith(PREFIX + ".tip." + prefix + ".")) && !(i.endsWith(".a") || i.endsWith(".b")))
             {
                 parts.add(Constant.messages.getString(i));
-                parts.add("<br>");
+                parts.add("<br><br>");
             }
         }
         parts.add("</html>");
