@@ -329,6 +329,7 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         // "</html>");
         pane.setText("<html>" + 
         getFeaturedTipDescB(ExtensionTipsAndAdvice.featuredTip) + 
+        "<br><br>If you would like to learn more, go to 'Help >> Tips and Advice' for more tips and advice!" +
         "</html>");
     }
 
