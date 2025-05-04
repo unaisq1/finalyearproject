@@ -283,11 +283,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
         ExtensionTipsAndAdvice.next.setIcon(nextIcon);
         
-        // pane.setText("<html>" + 
-        //     "<b>Tip of the Day:</b><br><br>" + 
-        //     getFeaturedTip(true, 0) + 
-        //     "<br><br>Click the right arrow to learn more." + 
-        // "</html>");  //Sources: https://stackoverflow.com/questions/9335604/java-change-font-in-a-jtextpane-containing-html/9335955#9335955 and https://stackoverflow.com/questions/9071389/setting-jtextpane-to-content-type-html-and-using-string-builders#:~:text=Every%20time%20JTextPane.,created%2C%20in%20your%20case%20HTMLDocument.
         pane.setText("<html>" + 
             "<b>Tip of the Day:</b><br><br>" + 
             Constant.messages.getString(ExtensionTipsAndAdvice.featuredTip) + 
@@ -306,9 +301,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         Icon nextIcon = new ImageIcon(getClass().getResource(RESOURCES + "/RightButton.png"));
         ExtensionTipsAndAdvice.next.setIcon(nextIcon);
 
-        // pane.setText("<html>" + 
-        // getFeaturedTipDescA(getFeaturedTip(false, 0)) + 
-        // "</html>"); 
         pane.setText("<html>" + 
         getFeaturedTipDescA(ExtensionTipsAndAdvice.featuredTip) + 
         "</html>"); 
@@ -324,9 +316,6 @@ public class ExtensionTipsAndAdvice extends ExtensionAdaptor {
         Icon nextIconGrey = new ImageIcon(getClass().getResource(RESOURCES + "/RightButtonGrey.png"));
         ExtensionTipsAndAdvice.next.setIcon(nextIconGrey);
 
-        // pane.setText("<html>" + 
-        // getFeaturedTipDescB(getFeaturedTip(false, 0)) + 
-        // "</html>");
         pane.setText("<html>" + 
         getFeaturedTipDescB(ExtensionTipsAndAdvice.featuredTip) + 
         "<br><br>If you would like to learn more, go to 'Help >> Tips and Advice' for more tips and advice!" +
