@@ -57,8 +57,6 @@ import org.parosproxy.paros.view.View;
 import org.zaproxy.zap.utils.FontUtils;
 import org.zaproxy.zap.view.ZapMenuItem;
 
-//import com.formdev.flatlaf.ui.FlatListCellBorder.Default;
-
 /**
  * An example ZAP extension which adds a top level menu item, a pop up menu item and a status panel.
  *
